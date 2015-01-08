@@ -1,34 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <regex.h>
 
-#define VERSION "0.1"
-#define LUA ".*\\.luac"
-#define LUA_SIG "\27Lua"
-#define PYTHON "*.pyc"
-#define LUA_VERSION 0x52
-#define COMMENT ";"
-/*
-static const char* const LUA_OPCODE[] = { "MOVE", "LOADK", "LOADKX", "LOADBOOL", "LOADNIL",
-                                          "GETUPVAL", "GETTABUP", "GETTABLE", "SETTABUP",
-                                          "SETUPVAL", "SETTABLE", "NEWTABLE", "SELF",
-                                          "ADD", "SUB", "MUL", "DIV", "MOD", "POW",
-                                          "UNM", "NOT", "LEN", "CONCAT", "JMP",
-                                          "EQ", "LT", "LE", "TEST", "TESTSET",
-                                          "CALL", "TAILCALL", "RETURN", "FORLOOP",
-                                          "FORPREP", "TFORCALL", "TFORLOOP", "SETLIST",
-                                          "CLOSURE", "VARARG", "EXTRAARG" };
-*/
-static inline void print_usage(int returncode){
-    printf("decode, the interpreter disassembler\nVersion %s\n\nUsage: decode <obj_file>", VERSION);
-    exit(returncode);
-}
+#include "util.h"
 
-static inline void die(const char* message){
-    fprintf(stderr, "%s\n", message);
-    exit(1);
-}
+static char lua_int = 0;
+static char lua_size_t = 0;
+static char lua_instruction = 0;
 
 static inline char * parse_args(int argc, char** argv){
     int i;
@@ -43,11 +21,6 @@ static inline char * parse_args(int argc, char** argv){
     die("No input file specified.");
 
     return NULL;
-}
-
-static inline int starts_with(const char* a, const char* b){
-    if(strncmp(a, b, strlen(b)) == 0) return 1;
-    return 0;
 }
 
 static inline char* lua_check(const char* file){
@@ -82,10 +55,14 @@ static inline char* lua_check(const char* file){
     if(content[4] != LUA_VERSION)
         die("This disassembler only works with Lua 5.2.");
 
+    lua_int = content[7];
+    lua_size_t = content[8];
+    lua_instruction = content[9];
+
     printf("%s Endianness: %s endian\n", COMMENT, content[6] == 0 ? "big" : "little");
-    printf("%s Int size: %i\n", COMMENT, content[7]);
-    printf("%s Size_t size: %i\n", COMMENT, content[8]);
-    printf("%s Instruction size: %i\n", COMMENT, content[9]);
+    printf("%s Int size: %i\n", COMMENT, lua_int);
+    printf("%s Size_t size: %i\n", COMMENT, lua_size_t);
+    printf("%s Instruction size: %i\n", COMMENT, lua_instruction);
     printf("%s lua_Number size: %i\n", COMMENT, content[10]);
 
     return content;
@@ -94,7 +71,16 @@ static inline char* lua_check(const char* file){
 void lua(char* file){
     char* file_contents = lua_check(file);
     char* stripped = file+12;
+    if(sizeof(size_t) >= lua_size_t)
+        size_t string_size = 0;
+    else if(sizeof(unsigned long long) >= lua_size_t)
+        unsigned long long string_size = 0;
+    else
+        die("The lua binary size_t datatype is too big for this machine.");
 
+    if(!memcpy(&string_size, stripped, lua_size_t)
+        die("Could not copy memory");
+    
     printf("%s\n", file_contents);
     printf("%s\n", stripped);
 

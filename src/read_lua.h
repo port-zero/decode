@@ -35,7 +35,7 @@ static inline char* print_lua_opcodes(char* stripped){
     for(i = 0; i < p;){
         stripped = copy(&ins, stripped, lua_instruction);
         c = (unsigned char) RETRIEVE_LUA_OPCODE(ins);
-        printf("%04lu\t%s", i++, LUA_OPCODE[c]);
+        printf("%04lu\t%s\t", i++, LUA_OPCODE[c]);
         
         switch(LUA_OPCODE_FIELDS[c]){
             case A:

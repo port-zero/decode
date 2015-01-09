@@ -24,7 +24,7 @@ static inline int starts_with(const char* a, const char* b){
 }
 
 static inline char* copy(void* dest, char* src, char s){
-    if(!memcpy(dest, src, s))
+    if(!memcpy((char*)dest, src, s))
         die("Could not copy memory");
 
     return src + s;

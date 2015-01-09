@@ -8,8 +8,8 @@
 #include "util.h"
 
 static inline char* print_lua_string(const char* prepend, char* stripped, unsigned long offset){
-    size_t c;
-    size_t i;
+    unsigned long long c;
+    unsigned long long i;
 
     stripped = copy(&c, stripped, lua_size_t);
 
@@ -74,15 +74,14 @@ static inline char* print_lua_opcodes(char* stripped){
 }
 
 static inline char* print_lua_constants(char* stripped){
-    unsigned int p;
-    unsigned int i;
+    long p, i;
 
     stripped = copy(&p, stripped, lua_int);
 
-    printf("%s Constants: (Size %u)\n", COMMENT, p);
+    printf("%s Constants: (Size %ld)\n", COMMENT, p);
 
     for(i = 0; i < p; i++){
-        printf("%04u\t", i);
+        printf("%04ld\t", i);
         switch(*(stripped)++){
             case 0:
                 puts("NIL");
@@ -93,7 +92,7 @@ static inline char* print_lua_constants(char* stripped){
             case 3:
                 printf("NUMBER: ");
                 stripped = copy(&p, stripped, 8);
-                printf("%u\n", p);
+                printf("%ld\n", p);
                 break;
             case 4:
                 printf("STRING: ");
@@ -113,9 +112,7 @@ static inline char* print_lua_function_prototypes(char* stripped){
 }
 
 static inline char* print_lua_source_line_positions(char* stripped){
-    unsigned int i;
-    unsigned int c;
-    unsigned int p;
+    unsigned int i, c, p;
 
     stripped = copy(&c, stripped, lua_int);
 

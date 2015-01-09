@@ -2,7 +2,7 @@
 #define LUA_UTIL_H
 
 
-#define LUA ".*\\.luac"
+#define LUA "^.*\\.luac$"
 #define LUA_SIG "\x1B\x4C\x75\x61" //  = \27Lua
 #define LUA_VERSION 0x51
 #define LUA_HEADER_SIZE 13

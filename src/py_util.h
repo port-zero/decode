@@ -1,7 +1,7 @@
 #ifndef PY_UTIL_H
 #define PY_UTIL_H
 
-#define PY ".*\\.pyc"
+#define PY "^.*\\.pyc$"
 #define PY_SIG "\xEE\x0C\r\n"
 #define PY_HEADER_SIZE 13
 

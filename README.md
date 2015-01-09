@@ -30,6 +30,8 @@ File has 'luac' ending, assuming lua bytecode.
 ; Constants: (Size 2)
 0000 STRING: print
 0001 STRING: Hello World!
+
+; End of binary information.
 ```
 
 As you might have noticed, the byte code has no arguments until now. This is
@@ -46,10 +48,10 @@ without havin Lua or Python installed. Yay, right?
 
 ## TODO
 
-* Parse Lua instruction arguments(functions to retrieve instruction fields exist, but seem wrong)
+* Parse Lua instruction arguments (functions to retrieve instruction fields exist, but seem wrong)
 * Parse remaining parts of Lua binary
   * function prototypes,
   * source line positions,
   * list of locals, and
   * list of upvalues
-* Parse Python
+* Parse Python (only header is parsed until now)

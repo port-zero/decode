@@ -161,9 +161,7 @@ static inline char* lua_check(const char* file){
     return content;
 }
 
-void lua(char* file){
-    char* file_contents = lua_check(file);
-    char* stripped = file_contents+12;
+static inline char* print_lua_general_info(char* stripped){
     union lua_int_type p;
 
     if(big){
@@ -188,6 +186,16 @@ void lua(char* file){
     printf("%s Number of Downvalues: %i\n", COMMENT, *(stripped)++);
     printf("%s Vararg flag: %i\n", COMMENT, *(stripped)++);
     printf("%s Maximum stack size: %i\n", COMMENT, *(stripped)++);
+
+    return stripped;
+}
+
+void lua(char* file){
+    char* file_contents = lua_check(file);
+    char* stripped = file_contents+12;
+
+    stripped = print_lua_general_info(stripped);
+
     putchar('\n');
 
     stripped = print_lua_opcodes(stripped);

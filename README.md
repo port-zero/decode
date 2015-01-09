@@ -41,7 +41,7 @@ The code looks like it just came out of a cows' behind, so beware.
 
 This disassembler is written purely in C, so it may well be faster than lad, 
 ChunkySpy, dis et al.
-Also, *it does not depend on any external libraries*. You can use it even
+Also, **it does not depend on any external libraries**. You can use it even
 without havin Lua or Python installed. Yay, right?
 
 ## TODO

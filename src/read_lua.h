@@ -43,12 +43,12 @@ static inline char* print_lua_opcodes(char* stripped){
 }
 
 static inline char* print_lua_constants(char* stripped){
-    long p;
+    unsigned long long p;
     unsigned long i;
 
     stripped = copy(&p, stripped, lua_int);
 
-    printf("\n%s Constants: (Size %ld)\n", COMMENT, p);
+    printf("\n%s Constants: (Size %llu)\n", COMMENT, p);
 
     for(i = 0; i < p; i++){
         printf("%04lu ", i);
@@ -60,7 +60,10 @@ static inline char* print_lua_constants(char* stripped){
                 printf("BOOL: %s\n", *(stripped)++ ? "TRUE" : "FALSE");
                 break;
             case 3:
-                printf("NUMBER: \n");
+                printf("NUMBER: ");
+                stripped = copy(&p, stripped, 8);
+                printf("%llu\n", p);
+                break;
             case 4:
                 stripped = print_lua_string("STRING:", stripped, 0);
                 break;
@@ -68,6 +71,27 @@ static inline char* print_lua_constants(char* stripped){
                 putchar(*(stripped));
                 die("UNKNOWN CONSTANT TYPE: CORRUPTED?");
         }
+    }
+
+    return stripped;
+}
+
+static inline char* print_lua_function_prototypes(char* stripped){
+    return stripped;
+}
+
+static inline char* print_lua_source_line_positions(char* stripped){
+    long i;
+    long c;
+    long p;
+
+    stripped = copy(&c, stripped, lua_int);
+
+    printf("%s Source position line list: \n", COMMENT);
+
+    for(i = 0; i < c; i++){
+        stripped = copy(&p, stripped, lua_int);
+        printf("%ld\n", p);
     }
 
     return stripped;
@@ -152,6 +176,12 @@ void lua(char* file){
     stripped = print_lua_opcodes(stripped);
 
     stripped = print_lua_constants(stripped);
+
+    stripped = print_lua_function_prototypes(stripped);
+
+    putchar('\n');
+
+    stripped = print_lua_source_line_positions(stripped);
 
     free((char*)file_contents);
 }

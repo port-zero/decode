@@ -26,6 +26,7 @@ static inline char* print_lua_opcodes(char* stripped){
     uint32_t ins;
     long p;
     long i;
+    unsigned char c;
 
     stripped = copy(&p, stripped, lua_int);
 
@@ -33,10 +34,40 @@ static inline char* print_lua_opcodes(char* stripped){
 
     for(i = 0; i < p;){
         stripped = copy(&ins, stripped, lua_instruction);
-        printf("%04lu\t%s\n", i++, 
-               LUA_OPCODE[(unsigned char) (RETRIEVE_LUA_OPCODE(ins))]);/*
-               RETRIEVE_LUA_FIELD_A(ins),
-               RETRIEVE_LUA_FIELD_Bx(ins));*/
+        c = (unsigned char) RETRIEVE_LUA_OPCODE(ins);
+        printf("%04lu\t%s", i++, LUA_OPCODE[c]);
+        
+        switch(LUA_OPCODE_FIELDS[c]){
+            case A:
+                printf("\t%d\n", RETRIEVE_LUA_FIELD_A(ins));
+                break;
+            case SBX:
+                printf("\t%d\n", RETRIEVE_LUA_FIELD_SBX(ins));
+                break;
+            case AB:
+                printf("\t%d\t%d\n", RETRIEVE_LUA_FIELD_A(ins),
+                       RETRIEVE_LUA_FIELD_B(ins));
+                break;
+            case AC:
+                printf("\t%d\t%d\n", RETRIEVE_LUA_FIELD_A(ins),
+                       RETRIEVE_LUA_FIELD_C(ins));
+                break;
+            case ASBX:
+                printf("\t%d\t%d\n", RETRIEVE_LUA_FIELD_A(ins),
+                       RETRIEVE_LUA_FIELD_SBX(ins));
+                break;
+            case ABC:
+                printf("\t%d\t%d\t%d\n", RETRIEVE_LUA_FIELD_A(ins),
+                       RETRIEVE_LUA_FIELD_B(ins),
+                       RETRIEVE_LUA_FIELD_C(ins));
+                break;
+            case ABX:
+                printf("\t%d\t%u\n", RETRIEVE_LUA_FIELD_A(ins),
+                       RETRIEVE_LUA_FIELD_BX(ins));
+                break;
+            default:
+                die("Opcode argument encoding wrong: Corrupted");
+        }
     }
 
     return stripped;

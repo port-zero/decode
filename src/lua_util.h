@@ -10,9 +10,19 @@
 #define RETRIEVE_LUA_OPCODE(N) N & 0x3F
 #define RETRIEVE_LUA_FIELD_A(N) N >> 9
 #define RETRIEVE_LUA_FIELD_B(N) (N >> 18) & 0x1FF
-#define RETRIEVE_LUA_FIELD_Bx(N) (N >> 18)
-#define RETRIEVE_LUA_FIELD_sBx(N) (N >> 18)
+#define RETRIEVE_LUA_FIELD_BX(N) (N >> 18)
+#define RETRIEVE_LUA_FIELD_SBX(N) (signed) RETRIEVE_LUA_FIELD_C(N)
 #define RETRIEVE_LUA_FIELD_C(N) (N >> 26) & 0xFF
+
+enum LUA_FIELD_USAGE{
+    AB,
+    ABX,
+    ABC,
+    SBX,
+    AC,
+    ASBX,
+    A
+};
 
 static const char* const LUA_OPCODE[] = { "MOVE", "LOADK", "LOADBOOL", "LOADNIL",
                                           "GETUPVAL", "GETGLOBAL", "GETTABLE",
@@ -23,6 +33,11 @@ static const char* const LUA_OPCODE[] = { "MOVE", "LOADK", "LOADBOOL", "LOADNIL"
                                           "TESTSET", "CALL", "TAILCALL", "RETURN", 
                                           "FORLOOP", "FORPREP", "TFORLOOP", "SETLIST", 
                                           "CLOSE", "CLOSURE", "VARARG" };
+
+static const char LUA_OPCODE_FIELDS[] = { AB, ABX, ABC, AB, AB, ABX, ABC, ABX, AB, ABC,
+                                          ABC, ABC, ABC, ABC, ABC, ABC, ABC, ABC, AB, AB,
+                                          AB, ABC, SBX, ABC, ABC, ABC, AC, ABC, ABC, ABC, 
+                                          AB, ASBX, ASBX, AC, ABC, A, ABX, AB };
 
 static char lua_int = 0;
 static char lua_size_t = 0;

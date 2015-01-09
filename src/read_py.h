@@ -44,7 +44,7 @@ static inline char* py_check(const char* file){
     copy_p = copy(&size, copy_p, 4);
 
     printf("%s Disassembly of file: %s\n", COMMENT, file);
-    printf("%s Timestamp: %s\n", COMMENT, ctime(&timestamp));
+    printf("%s Timestamp: %s", COMMENT, ctime(&timestamp));
     printf("%s Size: %i\n", COMMENT, size);
 
     return content;
@@ -52,6 +52,8 @@ static inline char* py_check(const char* file){
 
 static inline void py(char* file){
     char* file_contents = py_check(file);
+
+    putchar('\n');
 
     free(file_contents);
 }

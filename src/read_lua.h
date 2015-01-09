@@ -185,8 +185,9 @@ static inline char* lua_check(const char* file){
     printf("%s Instruction size: %i\n", COMMENT, lua_instruction);
     printf("%s lua_Number size: %i\n", COMMENT, content[10]);
 
-    if(sizeof(size_t) < lua_size_t) die("The lua binary size_t datatype is too big for this machine.");
-    if(sizeof(int) < lua_int) die("The lua binary int datatype is too big for this machine.");
+    if(sizeof(unsigned long long) < lua_size_t) die("The lua binary size_t datatype is too big for this machine.");
+    if(sizeof(long) < lua_int) die("The lua binary int datatype is too big for this machine.");
+    if(sizeof(int) < lua_int) puts("The lua binary int datatype is bigger than the int of this machine. This might lead to strange behaviour in the source line positions section. Please report any issues in Github(https://github.com/hellerve/decode/issues) or to veit@veitheller.de");
     
     return content;
 }

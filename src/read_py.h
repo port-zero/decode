@@ -50,10 +50,19 @@ static inline char* py_check(const char* file){
     return content;
 }
 
+static inline char* print_py_opcodes(char* content){
+    return content;
+}
+
 static inline void py(char* file){
     char* file_contents = py_check(file);
+    char* stripped = file_contents+12;
 
     putchar('\n');
+    stripped = print_py_opcodes(stripped);
+    putchar('\n');
+
+    puts("; End of binary information.");
 
     free(file_contents);
 }

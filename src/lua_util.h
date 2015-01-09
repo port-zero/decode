@@ -5,6 +5,7 @@
 #define LUA ".*\\.luac"
 #define LUA_SIG "\x1B\x4C\x75\x61" //  = \27Lua
 #define LUA_VERSION 0x51
+#define LUA_HEADER_SIZE 13
 
 #define RETRIEVE_LUA_OPCODE(N) N & 0x3F
 #define RETRIEVE_LUA_FIELD_A(N) N & 0x3FC0000

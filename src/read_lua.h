@@ -157,7 +157,7 @@ static inline char* lua_check(const char* file){
     file_size = (size_t) ftell(lua_file);
     fseek(lua_file, 0, SEEK_SET);
 
-    if(!file_size || file_size < 12)
+    if(!file_size || file_size < LUA_HEADER_SIZE)
         die("File is empty/not big enough to fit lua header.");
 
     content = (char*) malloc(file_size + 1);
@@ -214,7 +214,7 @@ static inline char* print_lua_general_info(char* stripped){
 
 void lua(char* file){
     char* file_contents = lua_check(file);
-    char* stripped = file_contents+12;
+    char* stripped = file_contents+LUA_HEADER_SIZE;
 
     stripped = print_lua_general_info(stripped);
     putchar('\n');

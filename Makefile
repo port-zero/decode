@@ -51,9 +51,3 @@ install:
 #Uninstalls from specified(or default)directory
 uninstall: 
 	rm -rf $(PREFIX)$(TARGET)
-
-#Checks for bad functions
-BADFUNCS='[^_.>a-zA-Z0-9](str(n?cpy|n?cat|xfrm|n?dup|str|pbrk|tok|_)|stpn?cpy|a?sn?printf|byte_)'
-check:
-	@echo Files with potentially dangerous functions:
-	@grep $(BADFUNCS) $(SOURCES) || echo None

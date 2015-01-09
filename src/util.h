@@ -20,6 +20,11 @@
 #define RETRIEVE_LUA_FIELD_sBx(N) (N >> 18)
 #define RETRIEVE_LUA_FIELD_C(N) (N >> 26) & 0xFF
 
+static char lua_int = 0;
+static char lua_size_t = 0;
+static char lua_instruction = 0;
+static char big = 0;
+
 union lua_int_type {
     int small;
     long big;

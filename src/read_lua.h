@@ -8,8 +8,8 @@
 #include "util.h"
 
 static inline char* print_lua_string(const char* prepend, char* stripped, unsigned long offset){
-    unsigned long long c;
-    unsigned long long i;
+    size_t c;
+    size_t i;
 
     stripped = copy(&c, stripped, lua_size_t);
 
@@ -36,7 +36,7 @@ static inline char* print_lua_opcodes(char* stripped){
         stripped = copy(&ins, stripped, lua_instruction);
         c = (unsigned char) RETRIEVE_LUA_OPCODE(ins);
         printf("%04lu\t%s\t", i++, LUA_OPCODE[c]);
-        
+
         switch(LUA_OPCODE_FIELDS[c]){
             case A:
                 printf("\t%d\n", RETRIEVE_LUA_FIELD_A(ins));
@@ -74,15 +74,15 @@ static inline char* print_lua_opcodes(char* stripped){
 }
 
 static inline char* print_lua_constants(char* stripped){
-    unsigned long long p;
-    unsigned long i;
+    unsigned int p;
+    unsigned int i;
 
     stripped = copy(&p, stripped, lua_int);
 
-    printf("\n%s Constants: (Size %llu)\n", COMMENT, p);
+    printf("%s Constants: (Size %u)\n", COMMENT, p);
 
     for(i = 0; i < p; i++){
-        printf("%04lu\t", i);
+        printf("%04u\t", i);
         switch(*(stripped)++){
             case 0:
                 puts("NIL");
@@ -93,7 +93,7 @@ static inline char* print_lua_constants(char* stripped){
             case 3:
                 printf("NUMBER: ");
                 stripped = copy(&p, stripped, 8);
-                printf("%llu\n", p);
+                printf("%u\n", p);
                 break;
             case 4:
                 printf("STRING: ");
@@ -113,19 +113,19 @@ static inline char* print_lua_function_prototypes(char* stripped){
 }
 
 static inline char* print_lua_source_line_positions(char* stripped){
-    long i;
-    long c;
-    long p;
+    unsigned int i;
+    unsigned int c;
+    unsigned int p;
 
     stripped = copy(&c, stripped, lua_int);
 
     if(c == 0 || stripped == NULL) return NULL;
 
-    printf("%s Source position line list(size %ld): \n", COMMENT, c);
+    printf("%s Source position line list(size %u): \n", COMMENT, c);
 
     for(i = 0; i < c; i++){
         stripped = copy(&p, stripped, lua_int);
-        printf("%ld\n", p);
+        printf("%u\n", p);
     }
 
     return stripped;
@@ -151,8 +151,6 @@ static inline char* lua_check(const char* file){
     char* content = NULL;
     size_t file_size = 0;
     FILE* lua_file = fopen(file, "r");
-
-    puts("File has 'luac' ending, assuming lua bytecode.\n");
 
     if(!lua_file)
         die("Could not open file.");
@@ -190,8 +188,8 @@ static inline char* lua_check(const char* file){
     printf("%s Instruction size: %i\n", COMMENT, lua_instruction);
     printf("%s lua_Number size: %i\n", COMMENT, content[10]);
 
-    if(sizeof(unsigned long long) < lua_size_t) die("The lua binary size_t datatype is too big for this machine.");
-    if(sizeof(long) < lua_int) die("The lua binary int datatype is too big for this machine.");
+    if(sizeof(size_t) < lua_size_t) die("The lua binary size_t datatype is too big for this machine.");
+    if(sizeof(int) < lua_int) die("The lua binary int datatype is too big for this machine.");
     
     return content;
 }
@@ -220,10 +218,9 @@ void lua(char* file){
     char* stripped = file_contents+12;
 
     stripped = print_lua_general_info(stripped);
-
     putchar('\n');
-
     stripped = print_lua_opcodes(stripped);
+    putchar('\n');
     stripped = print_lua_constants(stripped);
     putchar('\n');
     stripped = print_lua_function_prototypes(stripped);

@@ -6,7 +6,6 @@
 #include <string.h>
 
 #define VERSION "0.1"
-#define PYTHON "*.pyc"
 #define COMMENT ";"
 
 static inline void print_usage(int returncode){

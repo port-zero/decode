@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <regex.h>
 
-#include "read_lua.h"
+#include "heuristics.h"
 
 static inline char * parse_args(int argc, char** argv){
     int i;
@@ -19,17 +19,29 @@ static inline char * parse_args(int argc, char** argv){
     return NULL;
 }
 
-int main(int argc, char** argv){
-    char *file = parse_args(argc, argv);
+static inline int check_ending(char* file, const char* ending){
     regex_t regex;
-
-    if(regcomp(&regex, LUA, 0))
+    if(regcomp(&regex, ending, 0))
         die("Could not compile regex.");
 
-    if(regexec(&regex, file, 0, NULL, 0) == 0)
+    return regexec(&regex, file, 0, NULL, 0) == 0;
+}
+
+
+int main(int argc, char** argv){
+    char *file = parse_args(argc, argv);
+
+    if(check_ending(file, LUA)){
+        puts("File has 'luac' ending, assuming lua bytecode.\n");
         lua(file);
-    else
-        die("Unknown file type.");
+    }
+    else if(check_ending(file, PY)){
+        puts("File has 'pyc' ending, assuming python bytecode.\n");
+        py(file);
+    }
+    else{
+        heuristics(file);
+    }
 
     return 0;
 }

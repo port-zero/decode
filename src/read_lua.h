@@ -13,7 +13,7 @@ static inline char* print_lua_string(const char* prepend, char* stripped, unsign
 
     stripped = copy(&c, stripped, lua_size_t);
 
-    printf("%s %s ", COMMENT, prepend);
+    if(prepend) printf("%s %s ", COMMENT, prepend);
     for(i = offset; i < c; i++) putchar(*(stripped+i));
     putchar('\n');
         
@@ -25,11 +25,11 @@ static inline char* print_lua_string(const char* prepend, char* stripped, unsign
 static inline char* print_lua_opcodes(char* stripped){
     uint32_t ins;
     long p;
-    unsigned long i;
-
-    printf("%s Opcodes: \n", COMMENT);
+    long i;
 
     stripped = copy(&p, stripped, lua_int);
+
+    printf("%s Opcodes (Size %ld): \n", COMMENT, p);
 
     for(i = 0; i < p;){
         stripped = copy(&ins, stripped, lua_instruction);
@@ -51,7 +51,7 @@ static inline char* print_lua_constants(char* stripped){
     printf("\n%s Constants: (Size %llu)\n", COMMENT, p);
 
     for(i = 0; i < p; i++){
-        printf("%04lu ", i);
+        printf("%04lu\t", i);
         switch(*(stripped)++){
             case 0:
                 puts("NIL");
@@ -65,7 +65,8 @@ static inline char* print_lua_constants(char* stripped){
                 printf("%llu\n", p);
                 break;
             case 4:
-                stripped = print_lua_string("STRING:", stripped, 0);
+                printf("STRING: ");
+                stripped = print_lua_string(NULL, stripped, 0);
                 break;
             default:
                 putchar(*(stripped));
@@ -87,12 +88,30 @@ static inline char* print_lua_source_line_positions(char* stripped){
 
     stripped = copy(&c, stripped, lua_int);
 
-    printf("%s Source position line list: \n", COMMENT);
+    if(c == 0 || stripped == NULL) return NULL;
+
+    printf("%s Source position line list(size %ld): \n", COMMENT, c);
 
     for(i = 0; i < c; i++){
         stripped = copy(&p, stripped, lua_int);
         printf("%ld\n", p);
     }
+
+    return stripped;
+}
+
+static inline char* print_lua_locals(char* stripped){
+    return stripped;
+}
+
+static inline char* print_lua_upvalues(char* stripped){
+    long i;
+    long c;
+
+    stripped = copy(&c, stripped, lua_int);
+
+    printf("%s Upvalue list(size %ld):\n", COMMENT, c);
+    for(i = 0; i < c; i++) stripped = print_lua_string(NULL, stripped, 0);
 
     return stripped;
 }
@@ -174,14 +193,19 @@ void lua(char* file){
     putchar('\n');
 
     stripped = print_lua_opcodes(stripped);
-
     stripped = print_lua_constants(stripped);
-
-    stripped = print_lua_function_prototypes(stripped);
-
     putchar('\n');
-
+    stripped = print_lua_function_prototypes(stripped);
+    putchar('\n');
     stripped = print_lua_source_line_positions(stripped);
+    if(stripped){
+        putchar('\n');
+        stripped = print_lua_locals(stripped);
+        putchar('\n');
+        stripped = print_lua_upvalues(stripped);
+    }
+
+    puts("; End of binary information.");
 
     free((char*)file_contents);
 }

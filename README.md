@@ -46,8 +46,7 @@ without havin Lua or Python installed. Yay, right?
 
 ## TODO
 
-* Make code clean(just assume biggest type, no need for unions)
-* Parse Lua instruction arguments(functions to retrieve instruction fields exist)
+* Parse Lua instruction arguments(functions to retrieve instruction fields exist, but seem wrong)
 * Parse remaining parts of Lua binary
   * function prototypes,
   * source line positions,

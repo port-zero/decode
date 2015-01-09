@@ -44,7 +44,7 @@ static inline char* py_check(const char* file){
     copy_p = copy(&size, copy_p, 4);
 
     printf("%s Disassembly of file: %s\n", COMMENT, file);
-    printf("%s Timestamp: %s", COMMENT, ctime(&timestamp));
+    printf("%s Compilation Timestamp: %s", COMMENT, ctime(&timestamp));
     printf("%s Size: %i\n", COMMENT, size);
 
     return content;

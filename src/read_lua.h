@@ -70,23 +70,22 @@ static inline char* print_lua_opcodes(char* stripped){
             default:
                 die("Opcode argument encoding wrong: Corrupted");
         }
-        putchar('\n');
     }
 
     return stripped;
 }
 
 static inline char* print_lua_constants(char* stripped){
-    long p, i;
+    unsigned int p, i;
 
     stripped = copy(&p, stripped, lua_int);
 
-    printf("%s Constants: (Size %ld)\n", COMMENT, p);
+    printf("%s Constants: (Size %u)\n", COMMENT, p);
     printf("%s Line\tType\tValue\n", COMMENT);
     printf("%s -------------------\n", COMMENT);
 
     for(i = 0; i < p; i++){
-        printf("%04ld\t", i);
+        printf("%04u\t", i);
         switch(*(stripped)++){
             case 0:
                 puts("NIL");
@@ -97,14 +96,14 @@ static inline char* print_lua_constants(char* stripped){
             case 3:
                 printf("NUMBER: ");
                 stripped = copy(&p, stripped, 8);
-                printf("%ld\n", p);
+                printf("%u\n", p);
                 break;
             case 4:
                 printf("STRING: ");
                 stripped = print_lua_string(NULL, stripped, 0);
                 break;
             default:
-                putchar(*(stripped));
+                printf("%i\t", (*(stripped--)));
                 die("UNKNOWN CONSTANT TYPE: CORRUPTED?");
         }
     }

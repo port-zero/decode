@@ -31,13 +31,15 @@ static inline char* print_lua_opcodes(char* stripped){
     stripped = copy(&p, stripped, lua_int);
 
     printf("%s Opcodes (Size %ld): \n", COMMENT, p);
+    printf("%s Line\tOpcode\t\tA\tB\tC\n", COMMENT);
+    printf("%s ---------------------------------------\n", COMMENT);
 
     for(i = 0; i < p;){
         stripped = copy(&ins, stripped, lua_instruction);
         c = (unsigned char) RETRIEVE_LUA_OPCODE(ins);
         printf("%04lu\t%s\t", i++, LUA_OPCODE[c]);
 
-        /*switch(LUA_OPCODE_FIELDS[c]){
+        switch(LUA_OPCODE_FIELDS[c]){
             case A:
                 printf("\t%d\n", RETRIEVE_LUA_FIELD_A(ins));
                 break;
@@ -67,7 +69,7 @@ static inline char* print_lua_opcodes(char* stripped){
                 break;
             default:
                 die("Opcode argument encoding wrong: Corrupted");
-        }*/
+        }
         putchar('\n');
     }
 
@@ -80,6 +82,8 @@ static inline char* print_lua_constants(char* stripped){
     stripped = copy(&p, stripped, lua_int);
 
     printf("%s Constants: (Size %ld)\n", COMMENT, p);
+    printf("%s Line\tType\tValue\n", COMMENT);
+    printf("%s -------------------\n", COMMENT);
 
     for(i = 0; i < p; i++){
         printf("%04ld\t", i);

@@ -43,5 +43,12 @@ static char lua_int = 0;
 static char lua_size_t = 0;
 static char lua_instruction = 0;
 
+typedef struct lua_code {
+    int code_size;
+    char* code;
+    int decoded_size;
+    char** decoded;
+    int* lines;
+} luacode;
 
 #endif

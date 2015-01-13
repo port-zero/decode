@@ -1,6 +1,9 @@
 #ifndef LUA_UTIL_H
 #define LUA_UTIL_H
 
+#include <stdio.h>
+#include <stdlib.h>
+#include "util.h"
 
 #define LUA "^.*\\.luac$"
 #define LUA_SIG "\x1B\x4C\x75\x61" //  = \27Lua
@@ -49,6 +52,35 @@ typedef struct lua_code {
     int decoded_size;
     char** decoded;
     int* lines;
-} luacode;
+} lua_code;
+
+static inline lua_code lua_code_new(int size, char* code){
+    lua_code lua_c;
+
+    lua_c.code_size = size;
+    lua_c.code = code;
+    lua_c.decoded_size = -1;
+
+    return lua_c;
+}
+
+static inline char lua_code_allocated(lua_code code){
+    return code.decoded_size != -1;
+}
+
+static inline void lua_code_delete(lua_code code){
+    if(code.code) free(code.code);
+
+    if(lua_code_allocated(code)){
+        free(code.decoded);
+        free(code.lines);
+    }
+}
+
+static inline lua_code lua_code_print(lua_code code){
+    if(!code.code) fprintf(stderr, "Tried to print empty code object.");
+
+    return code;
+}
 
 #endif

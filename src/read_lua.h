@@ -24,20 +24,21 @@ static inline char* print_lua_string(const char* prepend, char* stripped, unsign
 
 static inline char* print_lua_opcodes(char* stripped){
     uint32_t ins;
-    long p;
-    long i;
+    unsigned int p, i;
     unsigned char c;
 
     stripped = copy(&p, stripped, lua_int);
 
-    printf("%s Opcodes (Size %ld): \n", COMMENT, p);
+    if(!p) return stripped;
+
+    printf("%s Opcodes (Size %d): \n", COMMENT, p);
     printf("%s Line\tOpcode\t\tA\tB\tC\n", COMMENT);
     printf("%s ---------------------------------------\n", COMMENT);
 
     for(i = 0; i < p;){
         stripped = copy(&ins, stripped, lua_instruction);
         c = (unsigned char) RETRIEVE_LUA_OPCODE(ins);
-        printf("%04lu\t%s\t", i++, LUA_OPCODE[c]);
+        printf("%04d\t%s\t", i++, LUA_OPCODE[c]);
 
         switch(LUA_OPCODE_FIELDS[c]){
             case A:
@@ -112,7 +113,9 @@ static inline char* print_lua_constants(char* stripped){
 }
 
 static inline char* print_lua_function_prototypes(char* stripped){
-    return stripped;
+    printf("%s Function prototypes list:\n", COMMENT);
+
+    return print_lua_opcodes(stripped);
 }
 
 static inline char* print_lua_source_line_positions(char* stripped){
@@ -120,29 +123,50 @@ static inline char* print_lua_source_line_positions(char* stripped){
 
     stripped = copy(&c, stripped, lua_int);
 
-    if(c == 0 || stripped == NULL) return NULL;
+    if(c == 0) return stripped;
 
     printf("%s Source position line list(size %u): \n", COMMENT, c);
 
     for(i = 0; i < c; i++){
         stripped = copy(&p, stripped, lua_int);
-        printf("%u\n", p);
+        printf("%s %u\n", COMMENT, p);
     }
 
     return stripped;
 }
 
 static inline char* print_lua_locals(char* stripped){
+    unsigned int i, c, number;
+
+    stripped = copy(&c, stripped, lua_int);
+
+    if(c == 0) return stripped;
+
+    printf("%s Constant list(size %u): \n", COMMENT, c);
+
+    for(i = 0; i < c; i++){
+        stripped = print_lua_string("Name:\t", stripped, 0);
+
+        stripped = copy(&number, stripped, lua_int);
+
+        printf("%s Start of scope: %u\t", COMMENT, number);
+
+        stripped = copy(&number, stripped, lua_int);
+
+        printf("End of scope: %u\n", number);
+    }
+
     return stripped;
 }
 
 static inline char* print_lua_upvalues(char* stripped){
-    long i;
-    long c;
+    unsigned int i, c;
 
     stripped = copy(&c, stripped, lua_int);
 
-    printf("%s Upvalue list(size %ld):\n", COMMENT, c);
+    if(c == 0) return stripped;
+
+    printf("%s Upvalue list(size %u):\n", COMMENT, c);
     for(i = 0; i < c; i++) stripped = print_lua_string(NULL, stripped, 0);
 
     return stripped;
@@ -189,23 +213,22 @@ static inline char* lua_check(const char* file){
     printf("%s Instruction size: %i\n", COMMENT, lua_instruction);
     printf("%s lua_Number size: %i\n", COMMENT, content[10]);
 
-    if(sizeof(unsigned long long) < lua_size_t) die("The lua binary size_t datatype is too big for this machine.");
-    if(sizeof(long) < lua_int) die("The lua binary int datatype is too big for this machine.");
-    if(sizeof(int) < lua_int) puts("The lua binary int datatype is bigger than the int of this machine. This might lead to strange behaviour in the source line positions section. Please report any issues in Github(https://github.com/hellerve/decode/issues) or to veit@veitheller.de");
+    if(sizeof(size_t) < lua_size_t) puts("The lua binary int datatype is bigger than the int of this machine. This might lead to strange behaviour in the source line positions section. Please report any issues in Github(https://github.com/hellerve/decode/issues) or to veit@veitheller.de");
+    if(sizeof(unsigned int) < lua_int) puts("The lua binary int datatype is bigger than the int of this machine. This might lead to strange behaviour in the source line positions section. Please report any issues in Github(https://github.com/hellerve/decode/issues) or to veit@veitheller.de");
     
     return content;
 }
 
 static inline char* print_lua_general_info(char* stripped){
-    long p;
+    unsigned int p;
 
     stripped = print_lua_string("Source file name:", stripped, 1);
 
     stripped = copy(&p, stripped, lua_int);
-    printf("%s Line defined: %ld\n", COMMENT, p);
+    printf("%s Line defined: %u\n", COMMENT, p);
 
     stripped = copy(&p, stripped, lua_int);
-    printf("%s Last Line defined: %ld\n", COMMENT, p);
+    printf("%s Last Line defined: %u\n", COMMENT, p);
 
     printf("%s Number of Upvalues: %i\n", COMMENT, *(stripped)++);
     printf("%s Number of Downvalues: %i\n", COMMENT, *(stripped)++);

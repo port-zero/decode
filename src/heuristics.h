@@ -22,7 +22,7 @@ static inline void heuristics(char* file){
 
     if(starts_with(content, LUA_SIG))
         lua(file);
-    if(starts_with(content, PY_SIG))
+    else if(starts_with(content, PY_SIG))
         py(file);
     else
         puts("Could not match magic numbers. decode only support Lua 5.1/Python 3.4.");

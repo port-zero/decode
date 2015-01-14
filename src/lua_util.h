@@ -78,10 +78,11 @@ static inline void lua_code_delete(lua_code* code){
 static inline void lua_code_allocate(lua_code* code, int size){
     code->decoded = (char**) malloc((long unsigned int)size * sizeof(char*));
     code->lines = (int*) malloc((long unsigned int)size * sizeof(int));
+    code->decoded_size = size;
 }
 
 static inline void lua_code_add_decoded(lua_code* code, char* decoded, int size, int position){
-    code->decoded[position] = strndup(decoded, size);
+    code->decoded[position] = strndup(decoded, (size_t) size);
 }
 
 static inline void lua_code_print(lua_code* code){
@@ -95,7 +96,7 @@ static inline void lua_code_print(lua_code* code){
     printf("%s ---------------------------------------\n", COMMENT);
     
     for(i = 0; i < code->decoded_size; i++)
-        printf("%04d\t%s\n", code->lines[i], code->decoded[i]);
+        printf("  %04d\t%s\n", code->lines[i], code->decoded[i]);
 }
 
 #endif

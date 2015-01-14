@@ -30,10 +30,4 @@ static inline char* copy(void* dest, char* src, char s){
     return src + s;
 }
 
-static inline char* strndup(const char *str, int n){
-    char* dup = (char*) malloc((size_t) n);
-    if(dup) strcpy(dup, str);
-    return dup;
-}
-
 #endif

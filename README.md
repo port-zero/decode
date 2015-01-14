@@ -4,16 +4,17 @@ development. The Lua Disassembler could be called semi-functional,
 a typical listing it provides you with would look like this:
 
 ```
-$ bin/decode hello.luac
+$ bin/decode test/hello.luac 
 File has 'luac' ending, assuming lua bytecode.
 
-; Disassembly of file: hello.luac
+Reading the file in may have failed(1 vs 143).
+; Disassembly of file: test/hello.luac
 ; Endianness: little endian
 ; Int size: 4
 ; Size_t size: 8
 ; Instruction size: 4
 ; lua_Number size: 8
-; Source file name: helloworld.lua
+; Source file name: hello.lua
 ; Line defined: 0
 ; Last Line defined: 0
 ; Number of Upvalues: 0
@@ -21,15 +22,22 @@ File has 'luac' ending, assuming lua bytecode.
 ; Vararg flag: 2
 ; Maximum stack size: 2
 
-; Opcodes: 
-0000    GETGLOBAL
-0001    LOADK
-0002    CALL
-0003    RETURN
-
 ; Constants: (Size 2)
-0000 STRING: print
-0001 STRING: Hello World!
+; Line  Type    Value
+; -------------------
+0000    STRING: print
+0001    STRING: hello world and lua
+
+; Function prototypes list:
+
+; Opcodes (Size 4): 
+; Line  Opcode      A   B   C
+; ---------------------------------------
+  0001  GETGLOBAL       0   0
+  0001  LOADK       64  16384
+  0001  CALL        0   16777216    16384
+  0001  RETURN      0   8388608
+
 
 ; End of binary information.
 ```
@@ -49,9 +57,4 @@ without havin Lua or Python installed. Yay, right?
 ## TODO
 
 * Parse Lua instruction arguments (functions to retrieve instruction fields exist, but seem wrong)
-* Parse remaining parts of Lua binary
-  * function prototypes,
-  * source line positions,
-  * list of locals, and
-  * list of upvalues
 * Parse Python (only header is parsed until now)

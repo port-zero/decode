@@ -47,40 +47,55 @@ static char lua_size_t = 0;
 static char lua_instruction = 0;
 
 typedef struct lua_code {
-    int code_size;
     char* code;
     int decoded_size;
     char** decoded;
     int* lines;
 } lua_code;
 
-static inline lua_code lua_code_new(int size, char* code){
-    lua_code lua_c;
+static inline lua_code* lua_code_new(char* code){
+    lua_code* lua_c = (lua_code*) malloc(sizeof(lua_code));
 
-    lua_c.code_size = size;
-    lua_c.code = code;
-    lua_c.decoded_size = -1;
+    lua_c->code = code;
+    lua_c->decoded_size = -1;
 
     return lua_c;
 }
 
-static inline char lua_code_allocated(lua_code code){
-    return code.decoded_size != -1;
+static inline char lua_code_allocated(lua_code* code){
+    return code->decoded_size != -1;
 }
 
-static inline void lua_code_delete(lua_code code){
-    if(code.code) free(code.code);
-
+static inline void lua_code_delete(lua_code* code){
     if(lua_code_allocated(code)){
-        free(code.decoded);
-        free(code.lines);
+        free(code->decoded);
+        free(code->lines);
     }
+
+    free(code);
 }
 
-static inline lua_code lua_code_print(lua_code code){
-    if(!code.code) fprintf(stderr, "Tried to print empty code object.");
+static inline void lua_code_allocate(lua_code* code, int size){
+    code->decoded = (char**) malloc((long unsigned int)size * sizeof(char*));
+    code->lines = (int*) malloc((long unsigned int)size * sizeof(int));
+}
 
-    return code;
+static inline void lua_code_add_decoded(lua_code* code, char* decoded, int size, int position){
+    code->decoded[position] = strndup(decoded, size);
+}
+
+static inline void lua_code_print(lua_code* code){
+    int i;
+
+    if(!code->code || !lua_code_allocated(code) || !code->decoded || !code->lines) 
+        fprintf(stderr, "Tried to print empty code object.");
+
+    printf("%s Opcodes (Size %d): \n", COMMENT, code->decoded_size);
+    printf("%s Line\tOpcode\t\tA\tB\tC\n", COMMENT);
+    printf("%s ---------------------------------------\n", COMMENT);
+    
+    for(i = 0; i < code->decoded_size; i++)
+        printf("%04d\t%s\n", code->lines[i], code->decoded[i]);
 }
 
 #endif

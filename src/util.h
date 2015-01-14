@@ -24,10 +24,16 @@ static inline int starts_with(const char* a, const char* b){
 }
 
 static inline char* copy(void* dest, char* src, char s){
-    if(!memcpy((char*)dest, src, s))
+    if(!memcpy(dest, src, (size_t)s))
         die("Could not copy memory");
 
     return src + s;
+}
+
+static inline char* strndup(const char *str, int n){
+    char* dup = (char*) malloc((size_t) n);
+    if(dup) strcpy(dup, str);
+    return dup;
 }
 
 #endif

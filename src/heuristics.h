@@ -7,6 +7,7 @@
 static inline void heuristics(char* file){
     char* content = NULL;
     FILE* f = fopen(file, "r");
+    size_t unused;
 
     if(!f)
         die("Could not open file.");
@@ -16,7 +17,8 @@ static inline void heuristics(char* file){
     if(!content)
         die("Could not allocate enough memory.");
 
-    fread(content, 9, 1, f);
+    unused = fread(content, 9, 1, f);
+    if(unused != 9) fprintf(stderr, "Reading the file in may have failed.");
     fclose(f);
     content[9] = 0;
 

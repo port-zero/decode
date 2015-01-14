@@ -15,6 +15,7 @@ static inline char* py_check(const char* file){
     int size;
     size_t file_size = 0;
     FILE* py_file = fopen(file, "r");
+    size_t unused;
 
     if(!py_file)
         die("Could not open file.");
@@ -31,7 +32,8 @@ static inline char* py_check(const char* file){
     if(!content)
         die("Could not allocate enough memory.");
 
-    fread(content, file_size, 1, py_file);
+    unused = fread(content, file_size, 1, py_file);
+    if(unused != file_size) fprintf(stderr, "Reading the file in may have failed.");
     fclose(py_file);
     content[file_size] = 0;
 

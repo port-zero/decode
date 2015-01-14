@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 
 #include "lua_util.h"
 #include "util.h"
@@ -22,64 +23,65 @@ static inline char* print_lua_string(const char* prepend, char* stripped, unsign
     return stripped;
 }
 
-static inline char* print_lua_opcodes(char* stripped){
+static inline lua_code* print_lua_opcodes(lua_code* stripped){
     uint32_t ins;
-    unsigned int p, i;
+    int p, i, o;
     unsigned char c;
+    const int size = 100;
+    char buffer[size];
 
-    stripped = copy(&p, stripped, lua_int);
+    stripped->code = copy(&p, stripped->code, lua_int);
 
     if(!p) return stripped;
 
-    printf("%s Opcodes (Size %d): \n", COMMENT, p);
-    printf("%s Line\tOpcode\t\tA\tB\tC\n", COMMENT);
-    printf("%s ---------------------------------------\n", COMMENT);
+    lua_code_allocate(stripped, p);
 
-    for(i = 0; i < p;){
-        stripped = copy(&ins, stripped, lua_instruction);
+    for(i = 0; i < p; i++){
+        stripped->code = copy(&ins, stripped->code, lua_instruction);
         c = (unsigned char) RETRIEVE_LUA_OPCODE(ins);
-        printf("%04d\t%s\t", i++, LUA_OPCODE[c]);
+        o = snprintf(buffer, (size_t) size, "%04d\t%s\t", i, LUA_OPCODE[c]);
 
         switch(LUA_OPCODE_FIELDS[c]){
             case A:
-                printf("\t%d\n", RETRIEVE_LUA_FIELD_A(ins));
+                o = snprintf(buffer+o, (size_t)(size-o), "\t%d\n", RETRIEVE_LUA_FIELD_A(ins));
                 break;
             case SBX:
-                printf("\t%d\n", RETRIEVE_LUA_FIELD_SBX(ins));
+                o = snprintf(buffer+o, (size_t)(size-o), "\t%d\n", RETRIEVE_LUA_FIELD_SBX(ins));
                 break;
             case AB:
-                printf("\t%d\t%d\n", RETRIEVE_LUA_FIELD_A(ins),
+                o = snprintf(buffer+o, (size_t)(size-o), "\t%d\t%d\n", RETRIEVE_LUA_FIELD_A(ins),
                        RETRIEVE_LUA_FIELD_B(ins));
                 break;
             case AC:
-                printf("\t%d\t%d\n", RETRIEVE_LUA_FIELD_A(ins),
+                o = snprintf(buffer+o, (size_t)(size-o), "\t%d\t%d\n", RETRIEVE_LUA_FIELD_A(ins),
                        RETRIEVE_LUA_FIELD_C(ins));
                 break;
             case ASBX:
-                printf("\t%d\t%d\n", RETRIEVE_LUA_FIELD_A(ins),
+                o = snprintf(buffer+o, (size_t)(size-o), "\t%d\t%d\n", RETRIEVE_LUA_FIELD_A(ins),
                        RETRIEVE_LUA_FIELD_SBX(ins));
                 break;
             case ABC:
-                printf("\t%d\t%d\t%d\n", RETRIEVE_LUA_FIELD_A(ins),
+                o = snprintf(buffer+o, (size_t)(size-o), "\t%d\t%d\t%d\n", RETRIEVE_LUA_FIELD_A(ins),
                        RETRIEVE_LUA_FIELD_B(ins),
                        RETRIEVE_LUA_FIELD_C(ins));
                 break;
             case ABX:
-                printf("\t%d\t%u\n", RETRIEVE_LUA_FIELD_A(ins),
+                o = snprintf(buffer+o, (size_t)(size-o), "\t%d\t%u\n", RETRIEVE_LUA_FIELD_A(ins),
                        RETRIEVE_LUA_FIELD_BX(ins));
                 break;
             default:
-                die("Opcode argument encoding wrong: Corrupted");
+                fprintf(stderr, "Opcode argument encoding wrong: Corrupted?");
         }
+        lua_code_add_decoded(stripped, buffer, o, i++);
     }
 
     return stripped;
 }
 
-static inline char* print_lua_constants(char* stripped){
+static inline lua_code* print_lua_constants(lua_code* stripped){
     unsigned int p, i;
 
-    stripped = copy(&p, stripped, lua_int);
+    stripped->code = copy(&p, stripped->code, lua_int);
 
     printf("%s Constants: (Size %u)\n", COMMENT, p);
     printf("%s Line\tType\tValue\n", COMMENT);
@@ -87,24 +89,24 @@ static inline char* print_lua_constants(char* stripped){
 
     for(i = 0; i < p; i++){
         printf("%04u\t", i);
-        switch(*(stripped)++){
+        switch(*(stripped->code)++){
             case 0:
                 puts("NIL");
                 break;
             case 1:
-                printf("BOOL: %s\n", *(stripped)++ ? "TRUE" : "FALSE");
+                printf("BOOL: %s\n", *(stripped->code)++ ? "TRUE" : "FALSE");
                 break;
             case 3:
                 printf("NUMBER: ");
-                stripped = copy(&p, stripped, 8);
+                stripped->code = copy(&p, stripped->code, 8);
                 printf("%u\n", p);
                 break;
             case 4:
                 printf("STRING: ");
-                stripped = print_lua_string(NULL, stripped, 0);
+                stripped->code = print_lua_string(NULL, stripped->code, 0);
                 break;
             default:
-                printf("%i\t", (*(stripped--)));
+                printf("%i\t", (*(stripped->code--)));
                 die("UNKNOWN CONSTANT TYPE: CORRUPTED?");
         }
     }
@@ -112,46 +114,47 @@ static inline char* print_lua_constants(char* stripped){
     return stripped;
 }
 
-static inline char* print_lua_function_prototypes(char* stripped){
+static inline lua_code* print_lua_function_prototypes(lua_code* stripped){
     printf("%s Function prototypes list:\n", COMMENT);
 
     return print_lua_opcodes(stripped);
 }
 
-static inline char* print_lua_source_line_positions(char* stripped){
-    unsigned int i, c, p;
+static inline lua_code* print_lua_source_line_positions(lua_code* stripped){
+    int i, c, p;
 
-    stripped = copy(&c, stripped, lua_int);
+    stripped->code = copy(&c, stripped->code, lua_int);
 
     if(c == 0) return stripped;
-
-    printf("%s Source position line list(size %u): \n", COMMENT, c);
+    if(stripped->decoded_size != c)
+        fprintf(stderr, "Source Lines List do not map to instructions.\nFile may be corrupted.\n");
 
     for(i = 0; i < c; i++){
-        stripped = copy(&p, stripped, lua_int);
-        printf("%s %u\n", COMMENT, p);
+        stripped->code = copy(&p, stripped->code, lua_int);
+
+        stripped->lines[i] = p;
     }
 
     return stripped;
 }
 
-static inline char* print_lua_locals(char* stripped){
+static inline lua_code* print_lua_locals(lua_code* stripped){
     unsigned int i, c, number;
 
-    stripped = copy(&c, stripped, lua_int);
+    stripped->code = copy(&c, stripped->code, lua_int);
 
     if(c == 0) return stripped;
 
     printf("%s Constant list(size %u): \n", COMMENT, c);
 
     for(i = 0; i < c; i++){
-        stripped = print_lua_string("Name:\t", stripped, 0);
+        stripped->code = print_lua_string("Name:\t", stripped->code, 0);
 
-        stripped = copy(&number, stripped, lua_int);
+        stripped->code = copy(&number, stripped->code, lua_int);
 
         printf("%s Start of scope: %u\t", COMMENT, number);
 
-        stripped = copy(&number, stripped, lua_int);
+        stripped->code = copy(&number, stripped->code, lua_int);
 
         printf("End of scope: %u\n", number);
     }
@@ -159,20 +162,21 @@ static inline char* print_lua_locals(char* stripped){
     return stripped;
 }
 
-static inline char* print_lua_upvalues(char* stripped){
+static inline lua_code* print_lua_upvalues(lua_code* stripped){
     unsigned int i, c;
 
-    stripped = copy(&c, stripped, lua_int);
+    stripped->code = copy(&c, stripped->code, lua_int);
 
     if(c == 0) return stripped;
 
     printf("%s Upvalue list(size %u):\n", COMMENT, c);
-    for(i = 0; i < c; i++) stripped = print_lua_string(NULL, stripped, 0);
+    for(i = 0; i < c; i++) stripped->code = print_lua_string(NULL, stripped->code, 0);
 
     return stripped;
 }
 
 static inline char* lua_check(const char* file){
+    size_t unused;
     char* content = NULL;
     size_t file_size = 0;
     FILE* lua_file = fopen(file, "r");
@@ -192,7 +196,8 @@ static inline char* lua_check(const char* file){
     if(!content)
         die("Could not allocate enough memory.");
 
-    fread(content, file_size, 1, lua_file);
+    unused = fread(content, file_size, 1, lua_file);
+    if(unused != file_size) fprintf(stderr, "Reading the file in may have failed.");
     fclose(lua_file);
     content[file_size] = 0;
 
@@ -219,38 +224,38 @@ static inline char* lua_check(const char* file){
     return content;
 }
 
-static inline char* print_lua_general_info(char* stripped){
+static inline lua_code* print_lua_general_info(lua_code* stripped){
     unsigned int p;
 
-    stripped = print_lua_string("Source file name:", stripped, 1);
+    stripped->code = print_lua_string("Source file name:", stripped->code, 1);
 
-    stripped = copy(&p, stripped, lua_int);
+    stripped->code = copy(&p, stripped->code, lua_int);
     printf("%s Line defined: %u\n", COMMENT, p);
 
-    stripped = copy(&p, stripped, lua_int);
+    stripped->code = copy(&p, stripped->code, lua_int);
     printf("%s Last Line defined: %u\n", COMMENT, p);
 
-    printf("%s Number of Upvalues: %i\n", COMMENT, *(stripped)++);
-    printf("%s Number of Downvalues: %i\n", COMMENT, *(stripped)++);
-    printf("%s Vararg flag: %i\n", COMMENT, *(stripped)++);
-    printf("%s Maximum stack size: %i\n", COMMENT, *(stripped)++);
+    printf("%s Number of Upvalues: %i\n", COMMENT, *(stripped->code)++);
+    printf("%s Number of Downvalues: %i\n", COMMENT, *(stripped->code)++);
+    printf("%s Vararg flag: %i\n", COMMENT, *(stripped->code)++);
+    printf("%s Maximum stack size: %i\n", COMMENT, *(stripped->code)++);
 
     return stripped;
 }
 
 void lua(char* file){
     char* file_contents = lua_check(file);
-    char* stripped = file_contents+LUA_HEADER_SIZE;
+    lua_code* stripped = lua_code_new(file_contents+LUA_HEADER_SIZE);
 
     stripped = print_lua_general_info(stripped);
     putchar('\n');
-    stripped = print_lua_opcodes(stripped);
-    putchar('\n');
     stripped = print_lua_constants(stripped);
     putchar('\n');
+    stripped = print_lua_opcodes(stripped);
     stripped = print_lua_function_prototypes(stripped);
     putchar('\n');
     stripped = print_lua_source_line_positions(stripped);
+    lua_code_print(stripped);
     if(stripped){
         putchar('\n');
         stripped = print_lua_locals(stripped);
@@ -261,6 +266,7 @@ void lua(char* file){
     puts("; End of binary information.");
 
     free((char*)file_contents);
+    lua_code_delete(stripped);
 }
 
 

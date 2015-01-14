@@ -3,7 +3,9 @@
 
 #define PY "^.*\\.pyc$"
 #define PY_SIG "\xEE\x0C\r\n"
-#define PY_HEADER_SIZE 13
+#define PY_HEADER_SIZE 12
+
+//All further definitions are taken from CPython, latest revision
 
 #define POP_TOP                 1  
 #define ROT_TWO                 2  
@@ -110,6 +112,36 @@
 #define LOAD_CLASSDEREF         148
 
 #define HAVE_ARGUMENT           90
+
+#define TYPE_NULL '0'
+#define TYPE_NONE 'N'
+#define TYPE_FALSE 'F'
+#define TYPE_TRUE 'T'
+#define TYPE_STOPITER 'S'
+#define TYPE_ELLIPSIS '.'
+#define TYPE_INT 'i'
+#define TYPE_FLOAT 'f'
+#define TYPE_BINARY_FLOAT 'g'
+#define TYPE_COMPLEX 'x'
+#define TYPE_BINARY_COMPLEX 'y'
+#define TYPE_LONG 'l'
+#define TYPE_STRING 's'
+#define TYPE_INTERNED 't'
+#define TYPE_REF 'r'
+#define TYPE_TUPLE '('
+#define TYPE_LIST '['
+#define TYPE_DICT '{'
+#define TYPE_CODE 'c'
+#define TYPE_UNICODE 'u'
+#define TYPE_UNKNOWN '?'
+#define TYPE_SET '<'
+#define TYPE_FROZENSET '>'
+#define FLAG_REF '\x80' 
+#define TYPE_ASCII 'a'
+#define TYPE_ASCII_INTERNED 'A'
+#define TYPE_SMALL_TUPLE ')'
+#define TYPE_SHORT_ASCII 'z'
+#define TYPE_SHORT_ASCII_INTERNED 'Z'
 
 #define HAS_ARG(op) ((op) >= HAVE_ARGUMENT)
 

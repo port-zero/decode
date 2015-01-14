@@ -53,6 +53,7 @@ static inline char* py_check(const char* file){
 }
 
 static inline char* print_py_opcodes(char* content){
+    //All further info is from CPython: Python/marshal.c
     return content;
 }
 

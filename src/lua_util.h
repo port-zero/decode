@@ -96,7 +96,7 @@ static inline void lua_code_print(lua_code* code){
     printf("%s ---------------------------------------\n", COMMENT);
     
     for(i = 0; i < code->decoded_size; i++)
-        printf("  %04d\t%s\n", code->lines[i], code->decoded[i]);
+        printf("  %04d\t%s", code->lines[i], code->decoded[i]);
 }
 
 #endif

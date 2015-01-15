@@ -18,7 +18,7 @@ static inline void heuristics(char* file){
         die("Could not allocate enough memory.");
 
     unused = fread(content, 9, 1, f);
-    if(unused != 9) fprintf(stderr, "Reading the file in may have failed.\n");
+    if(unused != 1) fprintf(stderr, "Reading the file in may have failed.\n");
     fclose(f);
     content[9] = 0;
 

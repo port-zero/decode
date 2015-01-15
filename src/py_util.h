@@ -4,145 +4,147 @@
 #define PY "^.*\\.pyc$"
 #define PY_SIG "\xEE\x0C\r\n"
 #define PY_HEADER_SIZE 12
-
-//All further definitions are taken from CPython, latest revision
-
-#define POP_TOP                 1  
-#define ROT_TWO                 2  
-#define ROT_THREE               3  
-#define DUP_TOP                 4  
-#define DUP_TOP_TWO             5  
-#define NOP                     9  
-#define UNARY_POSITIVE          10 
-#define UNARY_NEGATIVE          11 
-#define UNARY_NOT               12 
-#define UNARY_INVERT            15 
-#define BINARY_MATRIX_MULTIPLY  16 
-#define INPLACE_MATRIX_MULTIPLY 17 
-#define BINARY_POWER            19 
-#define BINARY_MULTIPLY         20 
-#define BINARY_MODULO           22 
-#define BINARY_ADD              23 
-#define BINARY_SUBTRACT         24 
-#define BINARY_SUBSCR           25 
-#define BINARY_FLOOR_DIVIDE     26 
-#define BINARY_TRUE_DIVIDE      27 
-#define INPLACE_FLOOR_DIVIDE    28 
-#define INPLACE_TRUE_DIVIDE     29 
-#define STORE_MAP               54 
-#define INPLACE_ADD             55 
-#define INPLACE_SUBTRACT        56 
-#define INPLACE_MULTIPLY        57 
-#define INPLACE_MODULO          59 
-#define STORE_SUBSCR            60 
-#define DELETE_SUBSCR           61 
-#define BINARY_LSHIFT           62 
-#define BINARY_RSHIFT           63 
-#define BINARY_AND              64 
-#define BINARY_XOR              65 
-#define BINARY_OR               66 
-#define INPLACE_POWER           67 
-#define GET_ITER                68 
-#define PRINT_EXPR              70 
-#define LOAD_BUILD_CLASS        71 
-#define YIELD_FROM              72 
-#define INPLACE_LSHIFT          75 
-#define INPLACE_RSHIFT          76 
-#define INPLACE_AND             77 
-#define INPLACE_XOR             78 
-#define INPLACE_OR              79 
-#define BREAK_LOOP              80 
-#define WITH_CLEANUP            81 
-#define RETURN_VALUE            83 
-#define IMPORT_STAR             84 
-#define YIELD_VALUE             86 
-#define POP_BLOCK               87 
-#define END_FINALLY             88 
-#define POP_EXCEPT              89 
-#define STORE_NAME              90 
-#define DELETE_NAME             91 
-#define UNPACK_SEQUENCE         92 
-#define FOR_ITER                93 
-#define UNPACK_EX               94 
-#define STORE_ATTR              95 
-#define DELETE_ATTR             96 
-#define STORE_GLOBAL            97 
-#define DELETE_GLOBAL           98 
-#define LOAD_CONST              100
-#define LOAD_NAME               101
-#define BUILD_TUPLE             102
-#define BUILD_LIST              103
-#define BUILD_SET               104
-#define BUILD_MAP               105
-#define LOAD_ATTR               106
-#define COMPARE_OP              107
-#define IMPORT_NAME             108
-#define IMPORT_FROM             109
-#define JUMP_FORWARD            110
-#define JUMP_IF_FALSE_OR_POP    111
-#define JUMP_IF_TRUE_OR_POP     112
-#define JUMP_ABSOLUTE           113
-#define POP_JUMP_IF_FALSE       114
-#define POP_JUMP_IF_TRUE        115
-#define LOAD_GLOBAL             116
-#define CONTINUE_LOOP           119
-#define SETUP_LOOP              120
-#define SETUP_EXCEPT            121
-#define SETUP_FINALLY           122
-#define LOAD_FAST               124
-#define STORE_FAST              125
-#define DELETE_FAST             126
-#define RAISE_VARARGS           130
-#define CALL_FUNCTION           131
-#define MAKE_FUNCTION           132
-#define BUILD_SLICE             133
-#define MAKE_CLOSURE            134
-#define LOAD_CLOSURE            135
-#define LOAD_DEREF              136
-#define STORE_DEREF             137
-#define DELETE_DEREF            138
-#define CALL_FUNCTION_VAR       140
-#define CALL_FUNCTION_KW        141
-#define CALL_FUNCTION_VAR_KW    142
-#define SETUP_WITH              143
-#define EXTENDED_ARG            144
-#define LIST_APPEND             145
-#define SET_ADD                 146
-#define MAP_ADD                 147
-#define LOAD_CLASSDEREF         148
-
-#define HAVE_ARGUMENT           90
-
-#define TYPE_NULL '0'
-#define TYPE_NONE 'N'
-#define TYPE_FALSE 'F'
-#define TYPE_TRUE 'T'
-#define TYPE_STOPITER 'S'
-#define TYPE_ELLIPSIS '.'
-#define TYPE_INT 'i'
-#define TYPE_FLOAT 'f'
-#define TYPE_BINARY_FLOAT 'g'
-#define TYPE_COMPLEX 'x'
-#define TYPE_BINARY_COMPLEX 'y'
-#define TYPE_LONG 'l'
-#define TYPE_STRING 's'
-#define TYPE_INTERNED 't'
-#define TYPE_REF 'r'
-#define TYPE_TUPLE '('
-#define TYPE_LIST '['
-#define TYPE_DICT '{'
-#define TYPE_CODE 'c'
-#define TYPE_UNICODE 'u'
-#define TYPE_UNKNOWN '?'
-#define TYPE_SET '<'
-#define TYPE_FROZENSET '>'
-#define FLAG_REF '\x80' 
-#define TYPE_ASCII 'a'
-#define TYPE_ASCII_INTERNED 'A'
-#define TYPE_SMALL_TUPLE ')'
-#define TYPE_SHORT_ASCII 'z'
-#define TYPE_SHORT_ASCII_INTERNED 'Z'
+#define HAVE_ARGUMENT 90
 
 #define HAS_ARG(op) ((op) >= HAVE_ARGUMENT)
 
+//All further definitions are taken from CPython, latest revision
+
+enum PY_OPCODES {
+    POP_TOP = 1,
+    ROT_TWO = 2,
+    ROT_THREE = 3,
+	DUP_TOP = 4,
+	DUP_TOP_TWO = 5,
+	NOP = 9,
+	UNARY_POSITIVE = 10,
+	UNARY_NEGATIVE = 11,
+	UNARY_NOT = 12,
+	UNARY_INVERT = 15,
+	BINARY_MATRIX_MULTIPLY = 16,
+	INPLACE_MATRIX_MULTIPLY = 17,
+	BINARY_POWER = 19,
+	BINARY_MULTIPLY = 20,
+	BINARY_MODULO = 22,
+	BINARY_ADD = 23,
+	BINARY_SUBTRACT = 24,
+	BINARY_SUBSCR = 25,
+	BINARY_FLOOR_DIVIDE = 26,
+	BINARY_TRUE_DIVIDE = 27,
+	INPLACE_FLOOR_DIVIDE = 28,
+	INPLACE_TRUE_DIVIDE = 29,
+	STORE_MAP = 54,
+	INPLACE_ADD = 55,
+	INPLACE_SUBTRACT = 56,
+	INPLACE_MULTIPLY = 57,
+	INPLACE_MODULO = 59,
+	STORE_SUBSCR = 60,
+	DELETE_SUBSCR = 61,
+	BINARY_LSHIFT = 62,
+	BINARY_RSHIFT = 63,
+	BINARY_AND = 64,
+	BINARY_XOR = 65,
+	BINARY_OR = 66,
+	INPLACE_POWER = 67,
+	GET_ITER = 68,
+	PRINT_EXPR = 70,
+	LOAD_BUILD_CLASS = 71,
+	YIELD_FROM = 72,
+	INPLACE_LSHIFT = 75,
+	INPLACE_RSHIFT = 76,
+	INPLACE_AND = 77,
+	INPLACE_XOR = 78,
+	INPLACE_OR = 79,
+	BREAK_LOOP = 80,
+	WITH_CLEANUP = 81,
+	RETURN_VALUE = 83,
+	IMPORT_STAR = 84,
+	YIELD_VALUE = 86,
+	POP_BLOCK = 87,
+	END_FINALLY = 88,
+	POP_EXCEPT = 89,
+	STORE_NAME = 90,
+	DELETE_NAME = 91,
+	UNPACK_SEQUENCE = 92,
+	FOR_ITER = 93,
+	UNPACK_EX = 94,
+	STORE_ATTR = 95,
+	DELETE_ATTR = 96,
+	STORE_GLOBAL = 97,
+	DELETE_GLOBAL = 98,
+	LOAD_CONST = 100,
+	LOAD_NAME = 101,
+	BUILD_TUPLE = 102,
+	BUILD_LIST = 103,
+	BUILD_SET = 104,
+	BUILD_MAP = 105,
+	LOAD_ATTR = 106,
+	COMPARE_OP = 107,
+	IMPORT_NAME = 108,
+	IMPORT_FROM = 109,
+	JUMP_FORWARD = 110,
+	JUMP_IF_FALSE_OR_POP = 111,
+	JUMP_IF_TRUE_OR_POP = 112,
+	JUMP_ABSOLUTE = 113,
+	POP_JUMP_IF_FALSE = 114,
+	POP_JUMP_IF_TRUE = 115,
+	LOAD_GLOBAL = 116,
+	CONTINUE_LOOP = 119,
+	SETUP_LOOP = 120,
+	SETUP_EXCEPT = 121,
+	SETUP_FINALLY = 122,
+	LOAD_FAST = 124,
+	STORE_FAST = 125,
+	DELETE_FAST = 126,
+	RAISE_VARARGS = 130,
+	CALL_FUNCTION = 131,
+	MAKE_FUNCTION = 132,
+	BUILD_SLICE = 133,
+	MAKE_CLOSURE = 134,
+	LOAD_CLOSURE = 135,
+	LOAD_DEREF = 136,
+	STORE_DEREF = 137,
+	DELETE_DEREF = 138,
+	CALL_FUNCTION_VAR = 140,
+	CALL_FUNCTION_KW = 141,
+	CALL_FUNCTION_VAR_KW = 142,
+	SETUP_WITH = 143,
+	EXTENDED_ARG = 144,
+	LIST_APPEND = 145,
+	SET_ADD = 146,
+	MAP_ADD = 147,
+	LOAD_CLASSDEREF = 148
+};
+
+enum PY_TYPES {
+	TYPE_NULL = '0',
+	TYPE_NONE = 'N',
+	TYPE_FALSE = 'F',
+	TYPE_TRUE = 'T',
+	TYPE_STOPITER = 'S',
+	TYPE_ELLIPSIS = '.',
+	TYPE_INT = 'i',
+	TYPE_FLOAT = 'f',
+	TYPE_BINARY_FLOAT = 'g',
+	TYPE_COMPLEX = 'x',
+	TYPE_BINARY_COMPLEX = 'y',
+	TYPE_LONG = 'l',
+	TYPE_STRING = 's',
+	TYPE_INTERNED = 't',
+	TYPE_REF = 'r',
+	TYPE_TUPLE = '(',
+	TYPE_LIST = '[',
+	TYPE_DICT = '{',
+	TYPE_CODE = 'c',
+	TYPE_UNICODE = 'u',
+	TYPE_UNKNOWN = '?',
+	TYPE_SET = '<',
+	TYPE_FROZENSET = '>',
+	FLAG_REF = '\x80',
+	TYPE_ASCII = 'a',
+	TYPE_ASCII_INTERNED = 'A',
+	TYPE_SMALL_TUPLE = ')',
+	TYPE_SHORT_ASCII = 'z',
+	TYPE_SHORT_ASCII_INTERNED = 'Z',
+};
 #endif

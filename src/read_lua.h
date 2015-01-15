@@ -199,7 +199,7 @@ static inline char* lua_check(const char* file){
         die("Could not allocate enough memory.");
 
     unused = fread(content, file_size, 1, lua_file);
-    if(unused != file_size) fprintf(stderr, "Reading the file in may have failed(%zu vs %zu).\n", unused, file_size);
+    if(unused != 1) fprintf(stderr, "Reading the file in may have failed.\n");
     fclose(lua_file);
     content[file_size] = 0;
 

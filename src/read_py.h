@@ -33,7 +33,7 @@ static inline char* py_check(const char* file){
         die("Could not allocate enough memory.");
 
     unused = fread(content, file_size, 1, py_file);
-    if(unused != file_size) fprintf(stderr, "Reading the file in may have failed(%zu vs %zu).\n", unused, file_size);
+    if(unused != 1) fprintf(stderr, "Reading the file in may have failed.\n");
     fclose(py_file);
     content[file_size] = 0;
 

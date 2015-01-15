@@ -77,7 +77,7 @@ static inline void lua_code_delete(lua_code* code){
 
 static inline void lua_code_allocate(lua_code* code, int size){
     code->decoded = (char**) malloc((long unsigned int)size * sizeof(char*));
-    code->lines = (int*) malloc((long unsigned int)size * sizeof(int));
+    code->lines = (int*) calloc((long unsigned int)size * sizeof(int), 1);
     code->decoded_size = size;
 }
 

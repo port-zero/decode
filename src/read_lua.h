@@ -115,12 +115,6 @@ static inline lua_code* print_lua_constants(lua_code* stripped){
     return stripped;
 }
 
-static inline lua_code* print_lua_function_prototypes(lua_code* stripped){
-    printf("%s Function prototypes list:\n", COMMENT);
-
-    return get_lua_opcodes(stripped);
-}
-
 static inline lua_code* get_lua_source_line_positions(lua_code* stripped){
     int i, c, p;
 
@@ -222,14 +216,14 @@ static inline char* lua_check(const char* file){
 
     if(sizeof(size_t) < lua_size_t) puts("The lua binary int datatype is bigger than the int of this machine. This might lead to strange behaviour in the source line positions section. Please report any issues in Github(https://github.com/hellerve/decode/issues) or to veit@veitheller.de");
     if(sizeof(unsigned int) < lua_int) puts("The lua binary int datatype is bigger than the int of this machine. This might lead to strange behaviour in the source line positions section. Please report any issues in Github(https://github.com/hellerve/decode/issues) or to veit@veitheller.de");
+
+    putchar('\n');
     
     return content;
 }
 
 static inline lua_code* print_lua_general_info(lua_code* stripped){
     unsigned int p;
-
-    stripped->code = print_lua_string("Source file name:", stripped->code, 1);
 
     stripped->code = copy(&p, stripped->code, lua_int);
     printf("%s Line defined: %u\n", COMMENT, p);
@@ -245,10 +239,9 @@ static inline lua_code* print_lua_general_info(lua_code* stripped){
     return stripped;
 }
 
-void lua(char* file){
-    char* file_contents = lua_check(file);
-    lua_code* stripped = lua_code_new(file_contents+LUA_HEADER_SIZE);
+static inline lua_code* print_lua_function_prototypes(lua_code* stripped);
 
+static inline lua_code* print_lua_function(lua_code* stripped){
     stripped = print_lua_general_info(stripped);
     putchar('\n');
     stripped = get_lua_opcodes(stripped);
@@ -256,14 +249,44 @@ void lua(char* file){
     putchar('\n');
     stripped = print_lua_function_prototypes(stripped);
     putchar('\n');
-    stripped = get_lua_source_line_positions(stripped);
+    
+    if(stripped){
+        stripped = get_lua_source_line_positions(stripped);
+    }
+    
     lua_code_print(stripped);
+    
     if(stripped){
         putchar('\n');
         stripped = print_lua_locals(stripped);
         putchar('\n');
         stripped = print_lua_upvalues(stripped);
     }
+
+    return stripped;
+}
+
+static inline lua_code* print_lua_function_prototypes(lua_code* stripped){
+    unsigned int c, i;
+
+    stripped->code = copy(&c, stripped->code, lua_int);
+
+    printf("%s Function prototypes list(Size %u):(\n", COMMENT, c);
+
+    for(i = 0; i < c; i++) stripped = print_lua_function(stripped);
+
+    printf("%s )\n", COMMENT);
+
+    return stripped;
+}
+
+void lua(char* file){
+    char* file_contents = lua_check(file);
+    lua_code* stripped = lua_code_new(file_contents+LUA_HEADER_SIZE);
+
+    stripped->code = print_lua_string("Source file name:", stripped->code, 1);
+
+    stripped = print_lua_function(stripped);
 
     puts("; End of binary information.");
 

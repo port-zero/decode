@@ -8,7 +8,7 @@
 
 #define HAS_ARG(op) ((op) >= HAVE_ARGUMENT)
 
-//All further definitions are taken from CPython, latest revision
+/* All further definitions are taken from CPython, latest revision */
 
 enum PY_OPCODES {
     POP_TOP = 1,

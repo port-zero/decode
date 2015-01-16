@@ -99,7 +99,7 @@ static inline lua_code* print_lua_constants(lua_code* stripped){
                 break;
             case 3:
                 printf("NUMBER: ");
-                stripped->code = copy(&p, stripped->code, 8);
+                stripped->code = copy(&p, stripped->code, lua_int);
                 printf("%u\n", p);
                 break;
             case 4:

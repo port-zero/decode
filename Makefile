@@ -3,7 +3,7 @@ override CFLAGS+=-Werror -Wall -g -fPIC -O2 -DNDEBUG -ftrapv -Wfloat-equal -Wund
 PREFIX=/usr/bin/
 BUILDDIR=bin/
 DEBUGDIR=debug/
-LIBS=
+LIBS=-D_GNU_SOURCE
 
 CC=cc
 

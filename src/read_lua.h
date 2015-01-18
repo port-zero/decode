@@ -271,11 +271,11 @@ static inline lua_code* print_lua_function_prototypes(lua_code* stripped){
 
     stripped->code = copy(&c, stripped->code, lua_int);
 
-    printf("%s Function prototypes list(Size %u):(\n", COMMENT, c);
+    printf("%s Function prototypes list(Size %u): {\n", COMMENT, c);
 
     for(i = 0; i < c; i++) stripped = print_lua_function(stripped);
 
-    printf("%s )\n", COMMENT);
+    printf("%s }\n", COMMENT);
 
     return stripped;
 }

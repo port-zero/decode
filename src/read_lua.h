@@ -232,7 +232,7 @@ static inline lua_code* print_lua_general_info(lua_code* stripped){
     printf("%s Last Line defined: %u\n", COMMENT, p);
 
     printf("%s Number of Upvalues: %i\n", COMMENT, *(stripped->code)++);
-    printf("%s Number of Downvalues: %i\n", COMMENT, *(stripped->code)++);
+    printf("%s Number of Parameters: %i\n", COMMENT, *(stripped->code)++);
     printf("%s Vararg flag: %i\n", COMMENT, *(stripped->code)++);
     printf("%s Maximum stack size: %i\n", COMMENT, *(stripped->code)++);
 

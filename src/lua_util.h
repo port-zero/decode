@@ -49,6 +49,7 @@ static char lua_instruction = 0;
 
 typedef struct lua_code {
     char* code;
+    int old_size;
     int decoded_size;
     char** decoded;
     int* lines;
@@ -77,13 +78,37 @@ static inline void lua_code_delete(lua_code* code){
 }
 
 static inline void lua_code_allocate(lua_code* code, int size){
+    if(lua_code_allocated(code)){
+        char** temp_decoded;
+        int* temp_lines;
+
+        code->old_size = code->decoded_size;
+        code->decoded_size += size;
+
+        temp_decoded = (char**) malloc((long unsigned int)code->decoded_size * sizeof(char*));
+        if(!temp_decoded){
+            lua_code_delete(code);
+            die("Could not reallocate: out of memory");
+        }
+        code->decoded = temp_decoded;
+
+        temp_lines = (int*) calloc((long unsigned int)code->decoded_size * sizeof(int), 1);
+        if(!temp_lines){
+            lua_code_delete(code);
+            die("Could not reallocate: out of memory");
+        }
+        code->lines = temp_lines;
+
+        return;
+    }
     code->decoded = (char**) malloc((long unsigned int)size * sizeof(char*));
     code->lines = (int*) calloc((long unsigned int)size * sizeof(int), 1);
     code->decoded_size = size;
+    code->old_size = 0;
 }
 
 static inline void lua_code_add_decoded(lua_code* code, char* decoded, int size, int position){
-    code->decoded[position] = strndup(decoded, (size_t) size);
+    code->decoded[position+code->old_size] = strndup(decoded, (size_t) size);
 }
 
 static inline void lua_code_print(lua_code* code){

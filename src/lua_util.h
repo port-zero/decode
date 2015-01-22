@@ -91,6 +91,7 @@ static inline void lua_code_allocate(lua_code* code, int size){
             die("Could not reallocate: out of memory");
         }
         code->decoded = temp_decoded;
+        temp_decoded = NULL;
 
         temp_lines = (int*) calloc((long unsigned int)code->decoded_size * sizeof(int), 1);
         if(!temp_lines){
@@ -98,6 +99,7 @@ static inline void lua_code_allocate(lua_code* code, int size){
             die("Could not reallocate: out of memory");
         }
         code->lines = temp_lines;
+        temp_lines = NULL;
 
         return;
     }
@@ -112,7 +114,7 @@ static inline void lua_code_add_decoded(lua_code* code, char* decoded, int size,
 }
 
 static inline void lua_code_print(lua_code* code){
-    int i;
+    register int i;
 
     if(!code->code || !lua_code_allocated(code) || !code->decoded || !code->lines) 
         fprintf(stderr, "Tried to print empty code object.");

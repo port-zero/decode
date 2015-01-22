@@ -5,7 +5,7 @@
 #include "heuristics.h"
 
 static inline char * parse_args(int argc, char** argv){
-    int i;
+    register unsigned int i;
 
     for(i = 1; i < argc; i++){
         if(strcmp(argv[i], "-h") == 0)

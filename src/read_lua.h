@@ -25,7 +25,8 @@ static inline char* print_lua_string(const char* prepend, char* stripped, unsign
 
 static inline lua_code* get_lua_opcodes(lua_code* stripped){
     uint32_t ins;
-    int p, i, o;
+    int p, o;
+    register int i;
     unsigned char c;
     const int size = 100;
     char buffer[size];
@@ -80,7 +81,8 @@ static inline lua_code* get_lua_opcodes(lua_code* stripped){
 }
 
 static inline lua_code* print_lua_constants(lua_code* stripped){
-    unsigned int p, i;
+    unsigned int p;
+    register unsigned int i;
 
     stripped->code = copy(&p, stripped->code, lua_int);
 
@@ -116,7 +118,8 @@ static inline lua_code* print_lua_constants(lua_code* stripped){
 }
 
 static inline lua_code* get_lua_source_line_positions(lua_code* stripped){
-    int i, c, p;
+    register int i;
+    int c, p;
 
     stripped->code = copy(&c, stripped->code, lua_int);
 
@@ -135,7 +138,8 @@ static inline lua_code* get_lua_source_line_positions(lua_code* stripped){
 }
 
 static inline lua_code* print_lua_locals(lua_code* stripped){
-    unsigned int i, c, number;
+    register unsigned int i;
+    unsigned int c, number;
 
     stripped->code = copy(&c, stripped->code, lua_int);
 
@@ -159,7 +163,8 @@ static inline lua_code* print_lua_locals(lua_code* stripped){
 }
 
 static inline lua_code* print_lua_upvalues(lua_code* stripped){
-    unsigned int i, c;
+    register unsigned int i;
+    unsigned int c;
 
     stripped->code = copy(&c, stripped->code, lua_int);
 
@@ -267,7 +272,8 @@ static inline lua_code* print_lua_function(lua_code* stripped){
 }
 
 static inline lua_code* print_lua_function_prototypes(lua_code* stripped){
-    unsigned int c, i;
+    unsigned int c;
+    register unsigned int i;
 
     stripped->code = copy(&c, stripped->code, lua_int);
 

@@ -1,4 +1,9 @@
 # decode
+
+**Disclaimer:** There is currently a bug in the Lua disassembly routine,
+which might lead to strange behaviour in the disassembly of functions.
+I am working on it.
+
 A Lua/Python Bytecode Disassembler. It is in the very early stages of
 development. The Lua Disassembler could be called semi-functional,
 a typical listing it provides you with would look like this:

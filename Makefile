@@ -1,5 +1,5 @@
 STD=c11
-override CFLAGS+=-Werror -Wall -g -fPIC -O2 -DNDEBUG -ftrapv -Wfloat-equal -Wundef -Wwrite-strings -Wconversion -Wuninitialized -pedantic -std=$(STD)
+override CFLAGS+=-Werror -Wall -g -fPIC -O2 -DNDEBUG -ftrapv -Wfloat-equal -Wundef -Wwrite-strings -Wconversion -Wuninitialized -pedantic -fsanitize=address -std=$(STD)
 PREFIX=/usr/bin/
 BUILDDIR=bin/
 DEBUGDIR=debug/

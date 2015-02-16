@@ -9,7 +9,7 @@
 #define COMMENT ";"
 
 static inline void print_usage(int returncode){
-    printf("decode, the interpreter disassembler\nVersion %s\n\nUsage: decode <obj_file>", VERSION);
+    printf("decode, the interpreter disassembler\nVersion %s\n\nUsage: decode <obj_file>\n", VERSION);
     exit(returncode);
 }
 

@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <execinfo.h>
 
 #define VERSION "0.1"
 #define COMMENT ";"
@@ -28,6 +29,17 @@ static inline char* copy(void* dest, char* src, char s){
         die("Could not copy memory");
 
     return src + s;
+}
+
+static inline void print_backtrace() {
+    void* trace[10];
+    int c, i;
+    char** names;
+
+    c = backtrace(trace, 10);
+    names = backtrace_symbols(trace, c);
+
+    for(i = 0; i < c; i++) printf("; %s\n", names[i]);
 }
 
 #endif

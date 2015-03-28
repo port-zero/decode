@@ -42,6 +42,7 @@ static inline lua_code* get_lua_opcodes(lua_code* stripped){
         c = (unsigned char) RETRIEVE_LUA_OPCODE(ins);
         if(c > 37){
             fprintf(stderr, "Opcode %d does not exist. Corrupted?\n", c); 
+            print_backtrace();
             continue;
         }
         o = snprintf(buffer, (size_t) size, "%s\t", LUA_OPCODE[c]);

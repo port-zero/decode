@@ -129,8 +129,12 @@ static inline lua_code* get_lua_source_line_positions(lua_code* stripped){
 
     if(c == 0) return stripped;
 
-    if(stripped->decoded_size != c)
-        fprintf(stderr, "WARNING: Source Lines List(Size %d) do not map to instructions(Size %d). File may be corrupted.\n", c, stripped->decoded_size);
+    if(stripped->decoded_size != c) fprintf(stderr, 
+                                            "WARNING: Source Lines List(Size %d) \
+                                            do not map to instructions(Size %d). \
+                                            File may be corrupted.\n", 
+                                            c, 
+                                            stripped->decoded_size);
 
     for(i = 0; i < c; i++){
         stripped->code = copy(&p, stripped->code, lua_int);
@@ -186,31 +190,26 @@ static inline char* lua_check(const char* file){
     size_t file_size = 0;
     FILE* lua_file = fopen(file, "r");
 
-    if(!lua_file)
-        die("Could not open file.");
+    if(!lua_file) die("Could not open file.");
     
     fseek(lua_file, 0, SEEK_END);
     file_size = (size_t) ftell(lua_file);
     fseek(lua_file, 0, SEEK_SET);
 
-    if(!file_size || file_size < LUA_HEADER_SIZE)
-        die("File is empty/not big enough to fit lua header.");
+    if(!file_size || file_size < LUA_HEADER_SIZE) die("File is empty/not big enough to fit lua header.");
 
     content = (char*) malloc(file_size + 1);
 
-    if(!content)
-        die("Could not allocate enough memory.");
+    if(!content) die("Could not allocate enough memory.");
 
     unused = fread(content, file_size, 1, lua_file);
     if(unused != 1) fprintf(stderr, "Reading the file in may have failed.\n");
     fclose(lua_file);
     content[file_size] = 0;
 
-    if(starts_with(content, LUA_SIG) == 0)
-        die("Lua header not right. Signature verification failed.");
+    if(starts_with(content, LUA_SIG) == 0) die("Lua header not right. Signature verification failed.");
 
-    if(content[4] != LUA_VERSION)
-        die("This disassembler only works with Lua 5.1.");
+    if(content[4] != LUA_VERSION) die("This disassembler only works with Lua 5.1.");
 
     lua_int = content[7];
     lua_size_t = content[8];
@@ -259,9 +258,7 @@ static inline lua_code* print_lua_function(lua_code* stripped){
     stripped = print_lua_function_prototypes(stripped);
     putchar('\n');
     
-    if(stripped){
-        stripped = get_lua_source_line_positions(stripped);
-    }
+    if(stripped) stripped = get_lua_source_line_positions(stripped);
     
     lua_code_print(stripped);
     

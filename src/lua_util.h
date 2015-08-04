@@ -12,11 +12,11 @@
 #define LUA_HEADER_SIZE 12
 
 #define RETRIEVE_LUA_OPCODE(N) (N & 0x3F)
-#define RETRIEVE_LUA_FIELD_A(N) (N & 0x3FC0)
-#define RETRIEVE_LUA_FIELD_B(N) (N & 0xFF800000)
-#define RETRIEVE_LUA_FIELD_BX(N) (N & 0xFFFFC000)
+#define RETRIEVE_LUA_FIELD_A(N) ((N & 0x3FC0) >> 6)
+#define RETRIEVE_LUA_FIELD_B(N) ((N & 0xFF800000) >> 23)
+#define RETRIEVE_LUA_FIELD_BX(N) ((N & 0xFFFFC000) >> 14)
 #define RETRIEVE_LUA_FIELD_SBX(N) (signed) RETRIEVE_LUA_FIELD_BX(N)
-#define RETRIEVE_LUA_FIELD_C(N) (N & 0x7FC000)
+#define RETRIEVE_LUA_FIELD_C(N) ((N & 0x7FC000) >> 14)
 
 enum LUA_FIELD_USAGE{
     AB,
@@ -120,8 +120,8 @@ static inline void lua_code_print(lua_code* code){
         fprintf(stderr, "Tried to print empty code object.");
 
     printf("%s Opcodes (Size %d): \n", COMMENT, code->decoded_size);
-    printf("%s Line\tOpcode\t\tA\tB\tC\n", COMMENT);
-    printf("%s ---------------------------------------\n", COMMENT);
+    printf("%s Line\tOpcode\t\t%8s\t|\t%8s\t|\t%8s\n", COMMENT, "A", "B", "C");
+    printf("%s -------------------------------------------------\n", COMMENT);
     
     for(i = 0; i < code->decoded_size; i++)
         printf("  %04d\t%s", code->lines[i], code->decoded[i]);

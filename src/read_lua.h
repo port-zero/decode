@@ -38,6 +38,7 @@ static inline lua_code* get_lua_opcodes(lua_code* stripped){
     lua_code_allocate(stripped, p);
 
     for(i = 0; i < p; i++){
+        ins = 0;
         stripped->code = copy(&ins, stripped->code, lua_instruction);
         c = (unsigned char) RETRIEVE_LUA_OPCODE(ins);
         if(c > 37){
@@ -45,34 +46,34 @@ static inline lua_code* get_lua_opcodes(lua_code* stripped){
             print_backtrace();
             continue;
         }
-        o = snprintf(buffer, (size_t) size, "%s\t", LUA_OPCODE[c]);
+        o = snprintf(buffer, (size_t) size, "%-8s\t", LUA_OPCODE[c]);
 
         switch(LUA_OPCODE_FIELDS[c]){
             case A:
-                o += snprintf(buffer+o, (size_t)(size-o), "\t%d\n", RETRIEVE_LUA_FIELD_A(ins));
+                o += snprintf(buffer+o, (size_t)(size-o), "%8d\t|\t|\n", RETRIEVE_LUA_FIELD_A(ins));
                 break;
             case SBX:
-                o += snprintf(buffer+o, (size_t)(size-o), "\t%d\n", RETRIEVE_LUA_FIELD_SBX(ins));
+                o += snprintf(buffer+o, (size_t)(size-o), "\t|\t%8d\t|\n", RETRIEVE_LUA_FIELD_SBX(ins));
                 break;
             case AB:
-                o += snprintf(buffer+o, (size_t)(size-o), "\t%d\t%d\n", RETRIEVE_LUA_FIELD_A(ins),
+                o += snprintf(buffer+o, (size_t)(size-o), "%8d\t|\t%8d\t|\n", RETRIEVE_LUA_FIELD_A(ins),
                        RETRIEVE_LUA_FIELD_B(ins));
                 break;
             case AC:
-                o += snprintf(buffer+o, (size_t)(size-o), "\t%d\t%d\n", RETRIEVE_LUA_FIELD_A(ins),
+                o += snprintf(buffer+o, (size_t)(size-o), "%8d\t|\t|\t%8d\n", RETRIEVE_LUA_FIELD_A(ins),
                        RETRIEVE_LUA_FIELD_C(ins));
                 break;
             case ASBX:
-                o += snprintf(buffer+o, (size_t)(size-o), "\t%d\t%d\n", RETRIEVE_LUA_FIELD_A(ins),
+                o += snprintf(buffer+o, (size_t)(size-o), "%8d\t|\t%8d\t\n", RETRIEVE_LUA_FIELD_A(ins),
                        RETRIEVE_LUA_FIELD_SBX(ins));
                 break;
             case ABC:
-                o += snprintf(buffer+o, (size_t)(size-o), "\t%d\t%d\t%d\n", RETRIEVE_LUA_FIELD_A(ins),
+                o += snprintf(buffer+o, (size_t)(size-o), "%8d\t|\t%8d\t|\t%8d\n", RETRIEVE_LUA_FIELD_A(ins),
                        RETRIEVE_LUA_FIELD_B(ins),
                        RETRIEVE_LUA_FIELD_C(ins));
                 break;
             case ABX:
-                o += snprintf(buffer+o, (size_t)(size-o), "\t%d\t%u\n", RETRIEVE_LUA_FIELD_A(ins),
+                o += snprintf(buffer+o, (size_t)(size-o), "%8d\t|\t%8d\t|\n", RETRIEVE_LUA_FIELD_A(ins),
                        RETRIEVE_LUA_FIELD_BX(ins));
                 break;
             default:

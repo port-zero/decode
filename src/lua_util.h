@@ -85,7 +85,7 @@ static inline void lua_code_allocate(lua_code* code, int size){
         code->old_size = code->decoded_size;
         code->decoded_size += size;
 
-        temp_decoded = (char**) malloc((long unsigned int)code->decoded_size * sizeof(char*));
+        temp_decoded = (char**) calloc((long unsigned int)code->decoded_size * sizeof(char*), 1);
         if(!temp_decoded){
             lua_code_delete(code);
             die("Could not reallocate: out of memory");
@@ -121,10 +121,10 @@ static inline void lua_code_print(lua_code* code){
 
     printf("%s Opcodes (Size %d): \n", COMMENT, code->decoded_size);
     printf("%s Line\tOpcode\t\t%8s\t|\t%8s\t|\t%8s\n", COMMENT, "A", "B", "C");
-    printf("%s -------------------------------------------------\n", COMMENT);
+    printf("%s ----------------------------------------------------------------------------------\n", COMMENT);
     
     for(i = 0; i < code->decoded_size; i++)
-        printf("  %04d\t%s", code->lines[i], code->decoded[i]);
+        if (code->decoded[i]) printf("  %04d\t%s", code->lines[i], code->decoded[i]);
 }
 
 #endif

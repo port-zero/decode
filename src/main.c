@@ -27,7 +27,6 @@ static inline int check_ending(char* file, const char* ending){
     return regexec(&regex, file, 0, NULL, 0) == 0;
 }
 
-
 int main(int argc, char** argv){
     char *file = parse_args(argc, argv);
 

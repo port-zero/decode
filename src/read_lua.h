@@ -16,7 +16,8 @@ static inline char* print_lua_string(const char* prepend, char* stripped, unsign
 
     if(prepend) printf("%s %s ", COMMENT, prepend);
     for(i = offset; i < c; i++) putchar(*(stripped+i));
-    putchar('\n');
+    if(!c) puts("(none)");
+    else putchar('\n');
         
     stripped += c;
     
@@ -50,17 +51,17 @@ static inline lua_code* get_lua_opcodes(lua_code* stripped){
 
         switch(LUA_OPCODE_FIELDS[c]){
             case A:
-                o += snprintf(buffer+o, (size_t)(size-o), "%8d\t|\t|\n", RETRIEVE_LUA_FIELD_A(ins));
+                o += snprintf(buffer+o, (size_t)(size-o), "%8d\t|\t%8s\t|\n", RETRIEVE_LUA_FIELD_A(ins), "");
                 break;
             case SBX:
-                o += snprintf(buffer+o, (size_t)(size-o), "\t|\t%8d\t|\n", RETRIEVE_LUA_FIELD_SBX(ins));
+                o += snprintf(buffer+o, (size_t)(size-o), "%8s\t|\t%8d\n", "", RETRIEVE_LUA_FIELD_SBX(ins));
                 break;
             case AB:
                 o += snprintf(buffer+o, (size_t)(size-o), "%8d\t|\t%8d\t|\n", RETRIEVE_LUA_FIELD_A(ins),
                        RETRIEVE_LUA_FIELD_B(ins));
                 break;
             case AC:
-                o += snprintf(buffer+o, (size_t)(size-o), "%8d\t|\t|\t%8d\n", RETRIEVE_LUA_FIELD_A(ins),
+                o += snprintf(buffer+o, (size_t)(size-o), "%8d\t|\t%8s\t|\t%8d\n", RETRIEVE_LUA_FIELD_A(ins), "",
                        RETRIEVE_LUA_FIELD_C(ins));
                 break;
             case ASBX:
@@ -73,7 +74,7 @@ static inline lua_code* get_lua_opcodes(lua_code* stripped){
                        RETRIEVE_LUA_FIELD_C(ins));
                 break;
             case ABX:
-                o += snprintf(buffer+o, (size_t)(size-o), "%8d\t|\t%8d\t|\n", RETRIEVE_LUA_FIELD_A(ins),
+                o += snprintf(buffer+o, (size_t)(size-o), "%8d\t|\t%8d\n", RETRIEVE_LUA_FIELD_A(ins),
                        RETRIEVE_LUA_FIELD_BX(ins));
                 break;
             default:
@@ -87,6 +88,7 @@ static inline lua_code* get_lua_opcodes(lua_code* stripped){
 
 static inline lua_code* print_lua_constants(lua_code* stripped){
     int p;
+    int64_t t;
     register unsigned int i;
 
     stripped->code = copy(&p, stripped->code, lua_int);
@@ -106,8 +108,8 @@ static inline lua_code* print_lua_constants(lua_code* stripped){
                 break;
             case 3:
                 printf("NUMBER: ");
-                stripped->code = copy(&p, stripped->code, lua_int);
-                printf("%u\n", p);
+                stripped->code = copy(&t, stripped->code, 8);
+                printf("%lld\n", t);
                 break;
             case 4:
                 printf("STRING: ");
@@ -131,9 +133,7 @@ static inline lua_code* get_lua_source_line_positions(lua_code* stripped){
     if(c == 0) return stripped;
 
     if(stripped->decoded_size != c) fprintf(stderr, 
-                                            "WARNING: Source Lines List(Size %d) \
-                                            do not map to instructions(Size %d). \
-                                            File may be corrupted.\n", 
+                                            "INFO: Source Lines List (Size %d) do not map to instructions (Size %d).\n",
                                             c, 
                                             stripped->decoded_size);
 
@@ -179,7 +179,7 @@ static inline lua_code* print_lua_upvalues(lua_code* stripped){
 
     if(c == 0) return stripped;
 
-    printf("%s Upvalue list(size %u):\n", COMMENT, c);
+    printf("%s Upvalue list (size %u):\n", COMMENT, c);
     for(i = 0; i < c; i++) stripped->code = print_lua_string(NULL, stripped->code, 0);
 
     return stripped;
@@ -208,7 +208,7 @@ static inline char* lua_check(const char* file){
     fclose(lua_file);
     content[file_size] = 0;
 
-    if(starts_with(content, LUA_SIG) == 0) die("Lua header not right. Signature verification failed.");
+    if(starts_with(content, LUA_SIG) == 0) die("Lua header not correct. Signature verification failed.");
 
     if(content[4] != LUA_VERSION) die("This disassembler only works with Lua 5.1.");
 
@@ -223,8 +223,8 @@ static inline char* lua_check(const char* file){
     printf("%s Instruction size: %i\n", COMMENT, lua_instruction);
     printf("%s lua_Number size: %i\n", COMMENT, content[10]);
 
-    if(sizeof(size_t) < lua_size_t) puts("The lua binary int datatype is bigger than the int of this machine. This might lead to strange behaviour in the source line positions section. Please report any issues in Github(https://github.com/hellerve/decode/issues) or to veit@veitheller.de");
-    if(sizeof(unsigned int) < lua_int) puts("The lua binary int datatype is bigger than the int of this machine. This might lead to strange behaviour in the source line positions section. Please report any issues in Github(https://github.com/hellerve/decode/issues) or to veit@veitheller.de");
+    if(sizeof(size_t) < lua_size_t) puts("The lua binary size_t datatype is bigger than the size_t of this machine. This might lead to strange behaviour in the source line positions section. Please report any issues on Github(https://github.com/hellerve/decode/issues) or to veit@veitheller.de");
+    if(sizeof(unsigned int) < lua_int) puts("The lua binary int datatype is bigger than the int of this machine. This might lead to strange behaviour in the source line positions section. Please report any issues on Github(https://github.com/hellerve/decode/issues) or to veit@veitheller.de");
 
     putchar('\n');
     
@@ -251,6 +251,8 @@ static inline lua_code* print_lua_general_info(lua_code* stripped){
 static inline lua_code* print_lua_function_prototypes(lua_code* stripped);
 
 static inline lua_code* print_lua_function(lua_code* stripped){
+    stripped->code = print_lua_string("Source file name:", stripped->code, 0);
+
     stripped = print_lua_general_info(stripped);
     putchar('\n');
     stripped = get_lua_opcodes(stripped);
@@ -291,8 +293,6 @@ static inline lua_code* print_lua_function_prototypes(lua_code* stripped){
 void lua(char* file){
     char* file_contents = lua_check(file);
     lua_code* stripped = lua_code_new(file_contents+LUA_HEADER_SIZE);
-
-    stripped->code = print_lua_string("Source file name:", stripped->code, 1);
 
     stripped = print_lua_function(stripped);
 

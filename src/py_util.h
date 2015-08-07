@@ -5,6 +5,7 @@
 #define PY_SIG "\xEE\x0C\r\n"
 #define PY_HEADER_SIZE 12
 #define HAVE_ARGUMENT 90
+#define HIGHEST_PY_OP 148
 
 #define HAS_ARG(op) ((op) >= HAVE_ARGUMENT)
 

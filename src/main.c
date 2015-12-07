@@ -8,10 +8,12 @@ static inline char * parse_args(int argc, char** argv){
     register unsigned int i;
 
     for(i = 1; i < argc; i++){
-        if(strcmp(argv[i], "-h") == 0)
+        if(strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0)
             print_usage(0);
+        else if(strcmp(argv[i], "-v") == 0 || strcmp(argv[i], "--version") == 0)
+            print_version(0);
         else
-            return argv[i];
+          return argv[i];
     }
 
     die("No input file specified.");

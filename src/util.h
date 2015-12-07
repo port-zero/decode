@@ -14,6 +14,11 @@ static inline void print_usage(int returncode){
     exit(returncode);
 }
 
+static inline void print_version(int returncode){
+    printf("decode, the interpreter disassembler\nVersion %s\n", VERSION);
+    exit(returncode);
+}
+
 static inline void die(const char* message){
     fprintf(stderr, "%s\n", message);
     exit(1);
